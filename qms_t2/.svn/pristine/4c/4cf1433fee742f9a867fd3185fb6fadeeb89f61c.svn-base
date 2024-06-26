@@ -1,0 +1,19 @@
+package com.qms.receive.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class ReceiveController {
+	@RequestMapping("/receive/list")
+	public String productlist() throws Exception{
+		return "receive/rcv01";
+	}
+	
+	@RequestMapping("/receive/rcv01pop1")
+	public String inbo01pop1() throws Exception{
+		return "/receive/rcv01pop1"; //팝업 연결 전 jsp 확인용
+	}
+	
+	
+}

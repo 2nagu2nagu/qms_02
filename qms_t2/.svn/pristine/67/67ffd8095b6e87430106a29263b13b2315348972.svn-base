@@ -1,0 +1,76 @@
+package com.qms.item.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qms.code.service.CodeService;
+import com.qms.item.service.BomService;
+import com.qms.item.vo.BomVO;
+import com.qms.item.vo.ItemVO;
+import com.qms.table.vo.common.ComCodeVO;
+
+@Controller
+public class BomController {
+	@Autowired
+	BomService service;
+	
+	@Autowired
+	CodeService cdservice;
+	
+	
+	@RequestMapping("/item/bom01")
+	public String bom01() throws Exception{
+		return "/item/bom01";
+	}
+	@RequestMapping("/item/bom01pop1")
+	public String bom01pop01() throws Exception{
+		return "/item/bom01pop1";
+	} 
+	@RequestMapping("/selectBomList")
+	@ResponseBody
+	public BomVO searchlist(@ModelAttribute("ItemVO") ItemVO vo) throws Exception {
+		//vo.setComGrpCd(Constant.POSITION_CD);
+		int totalPage = service.selectTotalBomCount(vo); 
+		List<BomVO> list = service.selectBomList(vo);
+		
+		BomVO bvo = new BomVO();
+		bvo.setBomlist(list);
+		bvo.setTotal(totalPage); //총 데이터수.
+		bvo.setStartPage(vo.getStartPage()); 
+		bvo.setCurrentPage(vo.getCurrentPage());//현재페이지
+		return bvo;
+	}
+	
+	@RequestMapping("/selectItemCode")
+	@ResponseBody
+	public List<ComCodeVO> ItemCode() throws Exception {
+		ComCodeVO vo = new ComCodeVO();
+		vo.setComGrpCd("IT01");
+		List<ComCodeVO> list = cdservice.selectGetdata(vo);
+		return list;
+	}
+	@RequestMapping("/selectBomDtlList")
+	@ResponseBody
+	public ArrayList<BomVO> selectBomDtlList(@ModelAttribute("BomVO") BomVO vo) throws Exception{
+		ArrayList<BomVO> list = service.selectBomDtlList(vo);
+		return list;
+	}
+	
+
+
+	
+
+
+
+
+
+
+
+}
+

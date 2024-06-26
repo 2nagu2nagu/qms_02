@@ -1,0 +1,13 @@
+package com.qms.approve.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.qms.approve.vo.NoticeVO;
+
+@Repository
+public interface NoticeDao {
+	public List<NoticeVO> selectNoticeList(NoticeVO vo) throws Exception;
+	
+}

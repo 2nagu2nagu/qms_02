@@ -1,0 +1,14 @@
+package com.qms.product.dao;
+
+import java.util.List;
+
+import org.mybatis.spring.annotation.MapperScan;
+
+import com.qms.product.vo.proVO;
+
+@MapperScan(basePackages="com.qms.product.dao")
+public interface ProductDao {
+	public List<proVO> selectMonthProList(proVO vo) throws Exception;
+	public int selectTotalMonthProCount(proVO vo) throws Exception;
+	
+}

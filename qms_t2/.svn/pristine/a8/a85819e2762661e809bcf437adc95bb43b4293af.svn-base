@@ -1,0 +1,29 @@
+package com.qms.user.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.table.vo.user.UserInfoVO;
+import com.qms.user.dao.UserDao;
+import com.qms.user.vo.UserVO;
+
+@Service
+public class UserService {
+
+	@Autowired
+	UserDao dao;
+	
+	public int selectTotalUserCount(UserVO vo) throws Exception{
+		return dao.selectTotalUserCount(vo);
+	}
+	
+	public List<UserInfoVO> selectUserList(UserInfoVO vo) throws Exception{
+		return dao.selectUserList(vo);
+	}
+	
+	
+
+
+}

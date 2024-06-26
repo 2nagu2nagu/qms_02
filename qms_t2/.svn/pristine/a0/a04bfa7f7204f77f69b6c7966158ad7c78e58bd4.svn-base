@@ -1,0 +1,19 @@
+package com.qms.approve.vo;
+
+import java.util.List;
+
+import com.qms.table.vo.approve.NoticeInfoVO;
+
+import lombok.Data;
+
+@Data
+public class NoticeVO extends NoticeInfoVO{
+	
+	
+	private List<NoticeInfoVO> noticelist; //공지사항리스트
+	
+	private String deptName;        //부서이름
+	
+	private String userName;		//작성자
+	
+}

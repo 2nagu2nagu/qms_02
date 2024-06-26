@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.receive.dao.ReceiveDao">
+
+	<resultMap type="com.qms.receive.vo.RcvVO" id="rcvMap">
+		<result property="rcvNo" column="RCV_NO" />
+		<result property="itemCd" column="ITEM_CD" />
+		<result property="inQty" column="IN_QTY" />
+		<result property="inPrice" column="IN_PRICE" />
+		<result property="location" column="LOCATION" />
+		<result property="invoiceNo" column="INVOICE_NO" />
+		<result property="compCd" column="COMP_CD" />
+		<result property="inDt" column="IN_DT" />
+		<result property="inStatus" column="IN_STATUS" />
+		<result property="shipper" column="SHIPPER" />
+		<result property="consignee" column="CONSIGNEE" />
+		<result property="notiParty" column="NOTI_PARTY" />
+		<result property="portLoad" column="PORT_LOAD" />
+		<result property="finalDest" column="FINAL_DEST" />
+		<result property="carrier" column="CARRIER" />
+		<result property="remark" column="REMARK" />
+		<result property="regDt" column="REG_DT" />
+		<result property="regUserId" column="REG_USER_ID" />
+		<result property="uptDt" column="UPT_DT" />
+		<result property="uptUserId" column="UPT_USER_ID" />
+		<result property="totalPrice" column="TOTAL_PRICE" />
+		<result property="itemCnt" column="ITEM_CNT" />
+		<result property="compName" column="COMP_NAME" />
+		<result property="inDtFrom" column="IN_DT_FROM" />
+		<result property="inDtTo" column="IN_DT_TO" />
+	</resultMap>
+
+
+	<select id="selectTotalRcvCount" resultType="integer">
+		 SELECT COUNT(*)
+				FROM    
+				   (SELECT A.IN_DT,
+				                    C.COMP_NAME,
+				                    A.INVOICE_NO,
+				                    TOTAL_PRICE,
+				                    ITEM_CNT
+				    FROM TB_RCV_INFO A, 
+				    ( SELECT RCV_NO, COUNT(*) ITEM_CNT , SUM(IN_QTY * IN_PRICE) TOTAL_PRICE
+					    FROM TB_RCV_ITEM 
+					    	GROUP BY RCV_NO) B, TB_PARTNER_INFO C
+						    WHERE A.RCV_NO = B.RCV_NO
+						    AND  A.COMP_CD = C.COMP_CD
+					    <if test="invoiceNo != null and invoiceNo !=''">
+			        		AND A.INVOICE_NO LIKE '%' || #{invoiceNo} || '%'
+			   		   </if>
+			   		   <if test="compName != null and compName !=''">
+			        		AND C.COMP_NAME LIKE '%' || #{compName} || '%'
+			   		   </if>
+			   		   <if test="inDtFrom !=null and inDtFrom !=''">
+							AND TO_CHAR(IN_DT,'yyyy-mm-dd') <![CDATA[ >= ]]>
+							#{inDtFrom}
+						</if>
+						<if test="inDtTo !=null and inDtTo !=''">
+							AND TO_CHAR(IN_DT,'yyyy-mm-dd') <![CDATA[ >= ]]>
+							#{inDtTo}
+						</if>)
+	</select>
+
+	<select id="selectRcvList" resultMap="rcvMap">
+				SELECT 
+						IN_DT,
+				        COMP_NAME,
+				        COMP_CD,
+				        INVOICE_NO,
+				        TOTAL_PRICE,
+				        ITEM_CNT,
+				        REG_DT,
+				        RN
+				FROM (
+				    SELECT 
+				        TO_CHAR(A.IN_DT, 'YYYY-MM-DD') AS IN_DT,
+				        C.COMP_NAME,
+				        A.COMP_CD,
+				        A.INVOICE_NO,
+				        B.TOTAL_PRICE,
+				        B.ITEM_CNT,
+				        TO_CHAR(A.REG_DT, 'YYYY-MM-DD') AS REG_DT,
+				        ROWNUM AS RN
+				    FROM 
+				        TB_RCV_INFO A,
+				        (SELECT RCV_NO, COUNT(*) ITEM_CNT, SUM(IN_QTY * IN_PRICE) TOTAL_PRICE
+				         FROM TB_RCV_ITEM
+				         GROUP BY RCV_NO) B,
+				        TB_PARTNER_INFO C
+				    WHERE 
+				        A.RCV_NO = B.RCV_NO
+				        AND A.COMP_CD = C.COMP_CD
+				   <if test="invoiceNo != null and invoiceNo !=''">
+		        		AND A.INVOICE_NO LIKE '%' || #{invoiceNo} || '%'
+		   		   </if>
+		   		   <if test="compName != null and compName !=''">
+		        		AND C.COMP_NAME LIKE '%' || #{compName} || '%'
+		   		   </if>
+		   		   <if test="inDtFrom !=null and inDtFrom !=''">
+						AND TO_CHAR(IN_DT,'yyyy-mm-dd') <![CDATA[ >= ]]>
+						#{inDtFrom}
+					</if>
+					<if test="inDtTo !=null and inDtTo !=''">
+						AND TO_CHAR(IN_DT,'yyyy-mm-dd') <![CDATA[ >= ]]>
+						#{inDtTo}
+					</if>
+				) 
+				WHERE RN<![CDATA[ > ]]>(#{currentPage}-1)*#{countPerPage}
+				AND RN<![CDATA[ <= ]]>#{currentPage}*#{countPerPage}
+
+	</select>
+
+
+
+</mapper>

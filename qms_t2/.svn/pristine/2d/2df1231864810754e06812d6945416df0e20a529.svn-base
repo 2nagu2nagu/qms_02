@@ -1,0 +1,5 @@
+package com.qms.table.vo.approve;
+
+public class AprvFileVO {
+
+}

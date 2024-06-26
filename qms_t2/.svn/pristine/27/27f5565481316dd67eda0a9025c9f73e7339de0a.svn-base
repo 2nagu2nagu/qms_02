@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.excel.dao.ExcelDao">
+	
+	<resultMap type="HashMap" id="itemMap">
+	
+		<result property="itemCd" 					column="ITEM_CD"/>
+		<result property="itemName" 				column="ITEM_NAME"/>
+		<result property="itemType"					column="ITEM_TYPE"/>
+		<result property="unitType" 				column="UNIT_TYPE"/>
+		<result property="hscode" 					column="HSCODE"/>
+		<result property="boxType" 					column="BOX_TYPE" />
+		<result property="boxQty" 					column="BOX_QTY" />
+		<result property="weight" 					column="WEIGHT" />
+		<result property="plantLine" 				column="PLANT_LINE" />		
+		<result property="unitPrice" 				column="UNIT_PRICE" />	
+		<result property="location" 				column="LOCATION" />	
+		<result property="subconYn" 				column="SUBCON_YN" />	
+		<result property="regDt"      				column="REG_DT" />
+	    <result property="regUserId"  				column="REG_USER_ID" />
+	    <result property="updDt"       				column="UPD_DT" />
+	    <result property="updUserId"   				column="UP_USER_ID" />
+	  	<result property="comName" 					column="COM_NAME" />	
+		<result property="comGrpCd" 				column="COM_GRP_CD" />	
+	    
+	</resultMap>
+	
+	<resultMap type="HashMap" id="userMap">
+		<result property="userId" 				column="USER_ID"/>
+		<result property="userPwd" 				column="USER_PWD"/>
+		<result property="userName"				column="USER_NAME"/>
+		<result property="phone" 				column="PHONE"/>
+		<result property="email" 				column="EMAIL"/>
+		<result property="deptCd" 				column="DEPT_CD" />
+		<result property="positionCd" 			column="POSITION_CD" />
+		<result property="leaveYn" 				column="LEAVE_YN" />
+		<result property="leaveDt" 				column="LEAVE_DT" />		
+		<result property="deptName" 			column="DEPT_NAME" />	
+		<result property="comName" 				column="COM_NAME" />	
+		<result property="comGrpCd" 			column="COM_GRP_CD" />	
+		<result property="regDt"      			column="REG_DT" />
+	    <result property="regUserId"  			column="REG_USER_ID" />
+	    <result property="updDt"       			column="UPD_DT" />
+	    <result property="updUserId"   			column="UP_USER_ID" />
+	  	
+	</resultMap>
+	
+		<resultMap type="HashMap" id="partnerMap">
+	
+		<result property="compCd" 					column="COMP_CD"/>
+		<result property="compName" 				column="COMP_NAME"/>
+		<result property="compType" 				column="COMP_TYPE"/>
+		<result property="bizNo"					column="BIZ_NO"/>
+		<result property="tradeYn" 					column="TRADE_YN"/>
+		<result property="compCeo" 					column="COMP_CEO"/>
+		<result property="phone" 					column="PHONE" />
+		<result property="email" 					column="EMAIL" />
+		<result property="addr" 					column="ADDR" />
+		<result property="mgrName" 					column="MGR_NAME" />		
+		<result property="mgrPosition" 				column="MGR_POSITION" />	
+		<result property="mgrPhone" 				column="MGR_PHONE" />	
+		<result property="delYn" 					column="DEL_YN" />	
+		<result property="regDt"      				column="REG_DT" />
+	    <result property="regUserId"  				column="REG_USER_ID" />
+	    <result property="updDt"       				column="UPD_DT" />
+	    <result property="updUserId"   				column="UP_USER_ID" />
+	    
+	</resultMap>
+
+	<select id="selectItemListTOexcel" resultMap="itemMap">
+		 SELECT 
+			    A.ITEM_CD, 
+			    A.ITEM_NAME,
+			    B1.COM_NAME AS ITEM_TYPE,
+                B2.COM_NAME AS UNIT_TYPE,
+                B3.COM_NAME AS PLANT_LINE,
+                B4.COM_NAME AS LOCATION,
+			    B5.COM_NAME AS BOX_TYPE,
+			    TO_CHAR(A.REG_DT, 'YYYY-MM-DD') AS REG_DT
+		    FROM
+		    	 TB_ITEM_INFO A
+    		INNER JOIN 
+				TB_COM_CODE B1 ON B1.COM_GRP_CD = 'IT01' AND A.ITEM_TYPE = B1.COM_CD
+			INNER JOIN 
+				TB_COM_CODE B2 ON B2.COM_GRP_CD = 'IT02' AND A.UNIT_TYPE = B2.COM_CD
+			INNER JOIN
+				TB_COM_CODE B3 ON B3.COM_GRP_CD = 'IT04' AND A.PLANT_LINE = B3.COM_CD
+			INNER JOIN 
+                TB_COM_CODE B4 ON B4.COM_GRP_CD = 'IT05' AND A.LOCATION = B4.COM_CD
+            INNER JOIN 
+                TB_COM_CODE B5 ON B5.COM_GRP_CD = 'IT03' AND A.BOX_TYPE = B5.COM_CD    
+			WHERE 1=1
+			<if test="itemCd != null and itemCd !=''">
+				AND A.ITEM_CD LIKE '%' || #{itemCd} || '%'
+			</if>
+			<if test="itemName != null and itemName !=''">
+				AND A.ITEM_NAME LIKE '%' || #{itemName} || '%'
+			</if>
+			<if test="itemType != null and itemType !=''">
+			    AND A.ITEM_TYPE = #{itemType}
+			</if>
+			AND B1.COM_GRP_CD IN 
+		    <foreach item="comGrpCd" collection="comGrpCdList" open="(" separator="," close=")">
+		        #{comGrpCd}
+		    </foreach>
+		    AND B2.COM_GRP_CD IN 
+		    <foreach item="comGrpCd" collection="comGrpCdList" open="(" separator="," close=")">
+		        #{comGrpCd}
+		    </foreach>
+		    AND B3.COM_GRP_CD IN 
+		    <foreach item="comGrpCd" collection="comGrpCdList" open="(" separator="," close=")">
+		        #{comGrpCd}
+		    </foreach>
+		     AND B4.COM_GRP_CD IN 
+		    <foreach item="comGrpCd" collection="comGrpCdList" open="(" separator="," close=")">
+		        #{comGrpCd}
+		    </foreach>
+		     AND B5.COM_GRP_CD IN 
+		    <foreach item="comGrpCd" collection="comGrpCdList" open="(" separator="," close=")">
+		        #{comGrpCd}
+		    </foreach>
+		     ORDER BY A.REG_DT DESC
+	</select>
+
+	<select id="selectPartnerListTOexcel" resultMap="partnerMap">
+		SELECT 
+			ROWNUM RN,
+			COMP_CD,
+			COMP_NAME,
+			DECODE(COMP_TYPE, 'S', '공급사', 'C', '고객사', COMP_TYPE) AS COMP_TYPE,
+			BIZ_NO,
+			TRADE_YN,
+			COMP_CEO,
+			PHONE,
+			EMAIL,
+			ADDR,
+			MGR_NAME,
+			MGR_POSITION,
+			MGR_PHONE,
+			DEL_YN,
+			TO_CHAR(REG_DT, 'YYYY-MM-DD') AS REG_DT
+			FROM TB_PARTNER_INFO
+		WHERE 1=1
+		<if test="compCd!=null and compCd!=''">
+		AND COMP_CD LIKE '%'||#{compCd}||'%'
+		</if>
+		<if test="compName!=null and compName!=''">
+		AND COMP_NAME LIKE '%'||#{compName}||'%'
+		</if>
+		<if test="compType!=null and compType!=''">
+		AND COMP_TYPE LIKE '%'||#{compType}||'%'
+		</if>
+		<if test="regDtFrom!=null and regDtFrom!=''">
+  		AND TO_CHAR(REG_DT,'yyyy-mm-dd') <![CDATA[ >= ]]> #{regDtFrom}
+  		</if>
+  		<if test="regDtTo!=null and regDtTo!=''">
+  		AND TO_CHAR(REG_DT,'yyyy-mm-dd') <![CDATA[ <= ]]> #{regDtTo}
+ 		</if>
+	</select>
+	
+
+
+
+
+</mapper>

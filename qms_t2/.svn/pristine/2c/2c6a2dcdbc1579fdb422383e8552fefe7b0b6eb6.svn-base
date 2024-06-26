@@ -1,0 +1,13 @@
+package com.qms.table.vo.approve;
+
+import com.qms.table.vo.common.BaseVO;
+
+import lombok.Data;
+
+@Data
+public class AprvInfoVO extends BaseVO {
+
+	private String docNo;		//문서번호
+	
+	
+}

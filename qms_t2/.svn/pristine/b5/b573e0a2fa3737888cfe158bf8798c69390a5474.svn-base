@@ -1,0 +1,14 @@
+package com.qms.item.vo;
+
+import java.util.List;
+
+import com.qms.table.vo.item.ItemInfoVO;
+
+import lombok.Data;
+
+@Data
+public class ItemVO extends ItemInfoVO{
+
+	private List<ItemInfoVO> Itemlist; //아이템리스트
+	
+}

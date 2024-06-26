@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.product.dao.ProductDao">
+
+		<resultMap type="com.qms.product.vo.proVO" id="ProMap">
+			<result property="itemCd" column="item_cd" />
+			<result property="itemName" column="item_name" />
+			<result property="compCd" column="comp_cd" />
+			<result property="planDt" column="plan_dt" />
+			<result property="productQty" column="product_qty" />
+			<result property="regDt" column="reg_dt" />
+			<result property="regUserId" column="reg_user_id" />
+			<result property="updDt" column="upd_dt" />
+			<result property="updUserId" column="upd_user_id" />
+			<result property="productYear" column="product_year" />
+			<result property="productMonth" column="product_month" />
+			<result property="compName" column="comp_name" />
+			<result property="productDt" column="product_dt" />
+			<result property="orderQty" column="order_qty" />
+			<result property="planQty" column="plan_qty" />
+		</resultMap>
+		<!-- 복붙용 표시 시작 (시작부터 끝까지 복사해주세요)-->
+		<select id = "selectTotalMonthProCount" resultType ="integer">
+				SELECT
+				   	COUNT(*)
+				FROM
+				    (
+				    SELECT 
+				    	A.PLAN_DT,
+				        A.COMP_CD,
+				        A.ITEM_CD,
+				        B.ORDER_QTY,
+				        B.PLAN_QTY,
+				        A.PRODUCT_QTY
+				    FROM
+				        TB_PRODUCT_INFO A, TB_PLAN_INFO B
+				    WHERE
+				        A.COMP_CD = B.COMP_CD
+				    AND
+				        A.PLAN_DT = B. PLAN_DT
+				    AND
+				        A.ITEM_CD = B. ITEM_CD
+				    <if test="compCd != null and compCd != ''">
+		            AND 
+		            	A.COMP_CD LIKE '%' || #{compCd} || '%'
+		        	</if>    
+				        )C,
+				        TB_ITEM_INFO D,
+				        TB_PARTNER_INFO E
+				WHERE
+				    C.ITEM_CD = D.ITEM_CD
+				AND
+				    C.COMP_CD = E.COMP_CD
+	        	AND
+    				TO_CHAR(C.PLAN_DT,'YYYYMM') = #{productDt}    
+		</select>
+		
+		<select id = "selectMonthProList" resultMap ="ProMap">
+			 SELECT
+		        RN,
+		        C.PLAN_DT,
+		        C.COMP_CD,
+		        E.COMP_NAME,
+		        C.ITEM_CD,
+		        D.ITEM_NAME,
+		        C.ORDER_QTY,
+		        C.PLAN_QTY,
+		        C.PRODUCT_QTY
+		    FROM
+		        (
+		        SELECT 
+		            ROW_NUMBER() OVER (ORDER BY A.COMP_CD, A.ITEM_CD) AS RN,
+		            A.PLAN_DT,
+		            A.COMP_CD,
+		            A.ITEM_CD,
+		            B.ORDER_QTY,
+		            B.PLAN_QTY,
+		            A.PRODUCT_QTY
+		        FROM
+		            TB_PRODUCT_INFO A,
+		            TB_PLAN_INFO B
+		        WHERE
+		            A.COMP_CD = B.COMP_CD
+		        AND
+		            A.PLAN_DT = B.PLAN_DT
+		        AND
+		            A.ITEM_CD = B.ITEM_CD
+		        AND
+    				TO_CHAR(A.PLAN_DT,'YYYYMM') = #{productDt}    
+		        <if test="compCd != null and compCd != ''">
+		        AND 
+		        	A.COMP_CD LIKE '%' || #{compCd} || '%'
+		        </if>
+		        ) C,
+		        TB_ITEM_INFO D,
+		        TB_PARTNER_INFO E
+		    WHERE
+		        C.ITEM_CD = D.ITEM_CD
+		    AND
+		        C.COMP_CD = E.COMP_CD 
+		    AND RN <![CDATA[ > ]]> (#{currentPage} - 1) * #{countPerPage} 
+		    AND RN <![CDATA[ <= ]]> #{currentPage} * #{countPerPage}    
+		</select>
+		<!-- 복붙용 표시 끝 (시작부터 끝까지 복사해주세요)-->
+
+
+</mapper>

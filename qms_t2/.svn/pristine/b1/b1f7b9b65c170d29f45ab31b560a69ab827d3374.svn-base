@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.plan.dao.PlanDao">
+
+		<resultMap type="com.qms.plan.vo.planVO" id="PlanMap">
+			<result property="itemCd" column="item_cd" />
+			<result property="itemName" column="item_name" />
+			<result property="compCd" column="comp_cd" />
+			<result property="compName" column="comp_name" />
+			<result property="planDt" column="plan_dt" />
+			<result property="planQty" column="plan_qty" />
+			<result property="orderQty" column="order_qty" />
+			<result property="regDt" column="reg_dt" />
+			<result property="regUserId" column="reg_user_id" />
+			<result property="updDt" column="upd_dt" />
+			<result property="updUserId" column="upd_user_id" />
+			<result property="planYear" column="plan_year" />
+			<result property="planMonth" column="plan_month" />
+		</resultMap>
+
+	<select id = "selectPlanList" resultMap = "PlanMap">
+		SELECT 
+		A.ITEM_CD, 
+		C.ITEM_NAME, 
+		B.ORDER_QTY, 
+		B.PLAN_QTY, 
+		(TO_CHAR(B.PLAN_DT,'DD')) PLAN_DT
+		FROM TB_PARTNER_ITEM A,
+		(SELECT * FROM TB_PLAN_INFO WHERE TO_CHAR(PLAN_DT,'YYYYMM') =#{planDt})B,
+	    TB_ITEM_INFO C
+		WHERE A.COMP_CD = #{compCd}
+		AND A.COMP_CD = B.COMP_CD(+)
+		AND A.ITEM_CD = B.ITEM_CD(+)
+		AND A.ITEM_CD = C.ITEM_CD
+		AND B.ORDER_QTY != '0'
+		AND B.PLAN_QTY != '0'
+        <if test="itemCd != null and itemCd != ''">
+            and ITEM_CD like '%'#{itemCd}'%'
+        </if>
+	</select>
+	
+	<delete id = "deletePlan">
+	DELETE FROM TB_PLAN_INFO
+        WHERE TO_CHAR(PLAN_DT,'YYYYMM') = #{planYear}||#{planMonth}
+         AND COMP_CD = #{compCd}
+	</delete>
+	
+	<update  id="insertPlan">
+    <foreach collection="planlist" item="item" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" ">
+	INTO TB_PLAN_INFO (
+		 COMP_CD,
+		 PLAN_DT,
+		 ITEM_CD,
+		 PLAN_QTY,
+		 ORDER_QTY,
+		 REG_USER_ID,
+		 REG_DT
+	  )
+		VALUES (
+	 #{compCd},#{item.planDt}, #{item.itemCd}, #{item.planQty}
+	 ,  #{item.orderQty}, #{userId}, SYSDATE
+	 )
+    		</foreach>
+		</update>
+	
+ 	
+ 	<select id="selectTotalMkPlanCount" resultType="integer">
+
+		SELECT COUNT(*)
+		FROM 
+		    TB_PLAN_INFO A
+		INNER JOIN 
+		    TB_PARTNER_INFO B ON A.COMP_CD = B.COMP_CD
+		INNER JOIN 
+		    TB_ITEM_INFO C ON A.ITEM_CD = C.ITEM_CD
+		WHERE
+		    1=1
+		
+  		
+	</select>
+ 	
+ 	<select id = "selectMkPlanList" resultMap ="PlanMap">
+ 			SELECT 
+ 				A.COMP_CD,
+			    B.COMP_NAME,
+			    A.ITEM_CD,
+			    C.ITEM_NAME,
+			    TO_CHAR(A.PLAN_DT,'DD')PLAN_DT,
+			    A.PLAN_QTY
+			    
+			FROM
+			    TB_PLAN_INFO A,
+			    TB_PARTNER_INFO B,
+			    TB_ITEM_INFO C
+			WHERE
+			    A.COMP_CD = B.COMP_CD
+			AND
+			    A.ITEM_CD = C.ITEM_CD
+			AND 
+				A.PLAN_QTY != '0'
+			AND 
+				A.ORDER_QTY != '0'
+			AND
+				TO_CHAR(A.PLAN_DT,'YYYY') = #{mkPlanYear}
+			AND
+				TO_CHAR(A.PLAN_DT,'MM') = #{mkPlanMonth}
+			    
+ 	</select>
+ 	
+
+		</mapper>

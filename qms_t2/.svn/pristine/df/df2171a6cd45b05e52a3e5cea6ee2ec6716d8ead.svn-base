@@ -1,0 +1,19 @@
+package com.qms.order.dao;
+
+import java.util.List;
+
+import org.mybatis.spring.annotation.MapperScan;
+
+import com.qms.order.vo.OrderVO;
+
+@MapperScan(basePackages="com.qms.order.dao")
+public interface OrderDao {
+	public List<OrderVO> selectOrderList(OrderVO vo) throws Exception;
+	public int selectTotalOrderCount(OrderVO vo) throws Exception;
+	
+	
+	
+	
+
+}
+	

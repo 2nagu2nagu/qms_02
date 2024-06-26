@@ -1,0 +1,112 @@
+package com.qms.product.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qms.excel.service.ExcelService;
+import com.qms.product.service.ProductService;
+import com.qms.product.vo.ProVO;
+import com.qms.product.vo.ProductVO;
+import com.qms.table.vo.product.ProductInfoVO;
+import com.qms.util.Constant;
+import com.qms.util.ExcelConstant;
+
+
+
+@Controller
+public class ProductController {
+	
+	@Autowired
+	ProductService service;
+	@Autowired
+	ExcelService excelService;
+	
+	@RequestMapping("/product/monthProList")
+	public String monthProductlist() throws Exception{
+		return "product/monthProList";
+	}
+	
+	@RequestMapping("/product/getMonthProSearch")
+	@ResponseBody
+	public ProVO getMonthProSearch(@ModelAttribute ("ProVO") ProVO vo ) throws Exception{
+		vo.setProductDt(vo.getProductYear()+vo.getProductMonth());
+		
+		int totalPage = service.selectTotalMonthProCount(vo);
+		
+		List<ProVO> list = service.selectMonthProList(vo);
+		
+		vo.setProList(list);
+		vo.setTotal(totalPage); //총 데이터수.
+		vo.setStartPage(vo.getStartPage()); 
+		vo.setCurrentPage(vo.getCurrentPage());//현재페이지
+		
+		return vo;
+	}
+	
+	@PostMapping("/product/monthProexcelDownload")
+	public ResponseEntity<byte[]> downloadExcel(@ModelAttribute("ProVO") ProVO vo) throws Exception {
+		vo.setProductDt(vo.getProductYear()+vo.getProductMonth());
+		
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("compCd", vo.getCompCd());
+		parameters.put("productDt", vo.getProductDt());
+		
+		
+	    List<Map<String, Object>> dataList = excelService.selectMonthProListTOexcel(parameters);
+
+	    String[] headers = ExcelConstant.MONTH_PRODUCT_HEADER;
+	    String[] columns = ExcelConstant.MONTH_PRODUCT_COLUMN;
+	    String sheetName = "월별 생산실적조회";
+	    String filenName = "monthPro_data.xlsx";
+
+	    return excelService.createExcelFile(dataList, columns, headers, filenName, sheetName);
+	}
+	
+	@RequestMapping("/product/monthly")
+	public String mkPlan(Model model) throws Exception{
+		model.addAttribute("baseYear", Constant.BASE_YEAR);
+		return "/product/monthlyProduct";
+	}
+	@RequestMapping("/product/mthProductList")
+	@ResponseBody
+	public ProductVO searchMthProList(@ModelAttribute ("ProductVO") ProductVO vo ) throws Exception{
+		int totalPage = service.selectTotalMthProCount(vo);
+		
+		List<ProductInfoVO> list = service.selectMonthlyProductList(vo);
+		
+		vo.setMthProList(list);
+		vo.setTotal(totalPage); //총 데이터수.
+		vo.setStartPage(vo.getStartPage()); 
+		vo.setCurrentPage(vo.getCurrentPage());//현재페이지
+		
+		return vo;
+	}
+	
+	@PostMapping("/mthProExcel/excelDownload")
+	public ResponseEntity<byte[]> downloadExcel(@ModelAttribute("ProductVO")ProductVO vo) throws Exception {
+	    Map<String, Object> parameters = new HashMap<>();
+	    
+	    List<Map<String, Object>> dataList = excelService.selectMthProToExcel(vo);
+
+	    String[] headers = ExcelConstant.MTHPRO_HEADER;
+	    String[] columns = ExcelConstant.MTHPRO_COLUMN;
+	    String sheetName = "월별 소요자재 조회";
+	    String filenName = "monthlyProduct.xlsx";
+
+	    return excelService.createExcelFile(dataList, columns, headers, filenName , sheetName);
+	}
+	
+
+
+	
+}

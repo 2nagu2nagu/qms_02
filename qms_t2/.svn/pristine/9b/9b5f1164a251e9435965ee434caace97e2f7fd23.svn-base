@@ -1,0 +1,26 @@
+package com.qms.item.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.item.dao.BomDao;
+import com.qms.item.vo.BomVO;
+import com.qms.item.vo.ItemVO;
+
+@Service
+public class BomService {
+
+	@Autowired
+	BomDao dao;
+	public List<BomVO>selectBomList(BomVO vo) throws Exception{
+		return dao.selectBomList(vo);
+	}
+	public int selectTotalItemCount(BomVO vo) throws Exception{
+		return dao.selectTotalItemCount(vo);
+	}
+	
+}	
+
+	

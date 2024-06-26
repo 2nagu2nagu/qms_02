@@ -1,0 +1,18 @@
+package com.qms.product.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+import com.qms.product.service.ProductService;
+
+
+@Controller
+public class ProductController {
+
+	@Autowired
+	ProductService service;
+	
+	
+	
+	
+}

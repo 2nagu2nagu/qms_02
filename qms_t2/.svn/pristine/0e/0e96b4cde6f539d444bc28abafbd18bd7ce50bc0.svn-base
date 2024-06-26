@@ -1,0 +1,15 @@
+package com.qms.plan.vo;
+
+import com.qms.table.vo.plan.PlanInfoVO;
+
+import lombok.Data;
+
+
+@Data
+public class planVO extends PlanInfoVO{
+	
+	private String itemName;
+	private String planYear;
+	private String planMonth;
+	private String compName;
+}

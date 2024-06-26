@@ -1,0 +1,74 @@
+package com.qms.approve.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.qms.approve.dao.ApproveDao;
+import com.qms.approve.vo.Aprv01VO;
+import com.qms.approve.vo.Aprv02VO;
+import com.qms.table.vo.approve.AprvFileVO;
+import com.qms.table.vo.approve.AprvInfoVO;
+import com.qms.table.vo.approve.AprvLineVO;
+
+@Service
+public class ApproveService {
+
+	@Autowired
+	ApproveDao dao;
+	
+	public ArrayList<AprvInfoVO> getDocStatus(AprvInfoVO vo) throws Exception{
+		return dao.getDocStatus(vo);
+	}
+	public Aprv01VO selectDocDetail(Aprv01VO vo) throws Exception{
+		return dao.selectDocDetail(vo);
+	}
+	
+	public List<Aprv02VO> selectAprvLineList(Aprv01VO vo) throws Exception{
+		return dao.selectAprvLineList(vo);
+	}
+	
+	public List<AprvFileVO> selectAprvFileList(Aprv01VO vo) throws Exception{
+		return dao.selectAprvFileList(vo);
+	}
+	
+	public int insertDocInfoData(Aprv01VO vo) throws Exception{
+		return dao.insertDocInfoData(vo);
+	}
+	
+	//기안서등록.
+		@Transactional
+		public int insertDocData(Aprv01VO vo) throws Exception{
+			String docNoVo = dao.selectMaxDocNo(vo);	// 주문번호 생성
+			vo.setDocNo(docNoVo);
+			
+			int cnt1 = dao.insertDocInfoData(vo);	//인포등록
+			
+			AprvLineVO linevo = new AprvLineVO();
+			linevo.setDocNo(docNoVo);
+			linevo.setRegUserId(vo.getUserId());
+			for (int i = 0; i < vo.getLinelist().size(); i++) {
+				linevo.setAprvSeq(""+(i+1));
+				linevo.setUserId(vo.getLinelist().get(i).getUserId());
+				int cnt2 = dao.insertLineInfoData(linevo);//결재라인등록
+			}
+			
+			
+			
+			
+				return 1;
+		}
+		
+		
+		public ArrayList<AprvInfoVO> selectAprvIng(Aprv01VO vo) throws Exception{
+			return dao.selectAprvIng(vo);
+		}
+		public ArrayList<AprvInfoVO> selectAprvDone(Aprv01VO vo) throws Exception{
+			return dao.selectAprvDone(vo);
+		}
+		
+		
+}

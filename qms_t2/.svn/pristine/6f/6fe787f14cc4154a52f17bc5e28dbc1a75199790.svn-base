@@ -1,0 +1,135 @@
+package com.qms.partner.service;
+
+import java.io.OutputStream;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.partner.dao.PartnerDao;
+import com.qms.partner.vo.PartnerVO;
+import com.qms.table.vo.item.ItemInfoVO;
+import com.qms.table.vo.system.PartnerInfoVO;
+
+@Service
+public class PartnerService {
+
+	@Autowired
+	PartnerDao dao;
+	
+	public int selectTotalPartnerCount(PartnerVO vo) throws Exception{
+		return dao.selectTotalPartnerCount(vo);
+	}
+	
+	public List<PartnerInfoVO> selectPartnerList(PartnerInfoVO vo) throws Exception{
+		return dao.selectPartnerList(vo);
+	}
+	public List<PartnerInfoVO> selectPartnerListTOexcel(PartnerInfoVO vo) throws Exception{
+		return dao.selectPartnerListTOexcel(vo);
+	} //전체 거래처 리스트를 가져오기
+
+	public static void createExcelFile(List<PartnerInfoVO> partnerList, OutputStream out) throws Exception {
+	    Workbook workbook = new XSSFWorkbook();
+	    Sheet sheet = workbook.createSheet("거래처 조회");
+
+	    // 헤더 셀 스타일 설정
+	    CellStyle headerCellStyle = workbook.createCellStyle();
+	    Font headerFont = workbook.createFont();
+	    headerFont.setBold(true); // 굵은 글꼴
+	    headerCellStyle.setFont(headerFont);
+	    headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	    headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    headerCellStyle.setBorderTop(BorderStyle.THIN); // 테두리 설정
+	    headerCellStyle.setBorderBottom(BorderStyle.THIN);
+	    headerCellStyle.setBorderLeft(BorderStyle.THIN);
+	    headerCellStyle.setBorderRight(BorderStyle.THIN);
+
+	    Row headerRow = sheet.createRow(0);
+	    
+	    // 헤더 셀 생성 및 스타일 적용
+	    Cell cell0 = headerRow.createCell(0);
+	    cell0.setCellValue("거래처코드");
+	    cell0.setCellStyle(headerCellStyle);
+
+	    Cell cell1 = headerRow.createCell(1);
+	    cell1.setCellValue("거래처명");
+	    cell1.setCellStyle(headerCellStyle);
+
+	    Cell cell2 = headerRow.createCell(2);
+	    cell2.setCellValue("거래처유형");
+	    cell2.setCellStyle(headerCellStyle);
+
+	    Cell cell3 = headerRow.createCell(3);
+	    cell3.setCellValue("대표자명");
+	    cell3.setCellStyle(headerCellStyle);
+
+	    Cell cell4 = headerRow.createCell(4);
+	    cell4.setCellValue("연락처");
+	    cell4.setCellStyle(headerCellStyle);
+	    
+	    Cell cell5 = headerRow.createCell(5);
+	    cell5.setCellValue("이메일");
+	    cell5.setCellStyle(headerCellStyle);
+	    
+	    Cell cell6 = headerRow.createCell(6);
+	    cell6.setCellValue("담당자명");
+	    cell6.setCellStyle(headerCellStyle);
+
+	    Cell cell7 = headerRow.createCell(7);
+	    cell7.setCellValue("담당자연락처");
+	    cell7.setCellStyle(headerCellStyle);
+	    
+	    Cell cell8 = headerRow.createCell(8);
+	    cell8.setCellValue("등록일");
+	    cell8.setCellStyle(headerCellStyle);
+
+	    // 데이터 채우기
+	    int rowNum = 1;
+	    for (PartnerInfoVO partner : partnerList) {
+	        Row row = sheet.createRow(rowNum++);
+	        row.createCell(0).setCellValue(partner.getCompCd());
+	        row.createCell(1).setCellValue(partner.getCompName());
+	        row.createCell(2).setCellValue(partner.getCompType());
+	        row.createCell(3).setCellValue(partner.getCompCeo());
+	        row.createCell(4).setCellValue(partner.getPhone());
+	        row.createCell(5).setCellValue(partner.getEmail());
+	        row.createCell(6).setCellValue(partner.getMgrName());
+	        row.createCell(7).setCellValue(partner.getMgrPhone());
+	        row.createCell(8).setCellValue(partner.getRegDt());
+	    }
+
+	    workbook.write(out);
+	    workbook.close();
+	}
+	
+	//모달
+	
+	public PartnerVO selectPartnerDtldata(PartnerVO vo) throws Exception{
+		return dao.selectPartnerDtldata(vo);
+	}
+	
+	public int insertNewPartner(PartnerVO vo) throws Exception{
+		return dao.insertNewPartner(vo);
+	}
+	
+	public int selectDuplicateCompCdCheck(PartnerVO vo) throws Exception{
+		return dao.selectDuplicateCompCdCheck(vo);
+	}
+
+	public int updatePartnerData(PartnerVO vo) throws Exception{
+		return dao.updatePartnerData(vo);
+	}
+	
+	
+		
+}

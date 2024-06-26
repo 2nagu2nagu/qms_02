@@ -1,0 +1,415 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+
+<main id="main" class="main">
+
+	<section class="section">
+		<div class="row">
+			<div class="col-lg-12">
+
+				<div class="card">
+					<div class="card-body" style="padding-top: 20px;">
+						<!-- General Form Elements -->
+						<form id="searchform">
+							<input type='hidden' id='currentPage' name='currentPage' value=1>
+							<table class="col-lg-12">
+								<tr>
+									<td>
+										<div class="row mb-4">
+											<label for="inputText" class="col-sm-2 col-form-label">거래처명</label>
+											<div class="col-sm-4">
+												<select class="form-control" id="supplierCd" name="supplierCd">
+												</select>
+											</div>
+										</div>
+									<td>
+									<td rowspan="2">
+										<button type="button" class="btn btn-info" onclick="orderSearch();">조회</button>
+										<button type="button" class="btn btn-info" onclick="newOrder();">신규</button>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="row mb-3">
+											<label for="inputDate" class="col-sm-1 col-form-label">발주일</label>
+											<div class="col-sm-2">
+												<input type="date" class="form-control" id="incomeDtFrom"
+													name="incomeDtFrom">
+											</div>
+											~
+											<div class="col-sm-2">
+												<input type="date" class="form-control" id=incomeDtTo
+													name="incomeDtTo">
+											</div>
+
+										</div>
+									</td>
+								</tr>
+							</table>
+
+
+
+						</form>
+
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<!-- Table with hoverable rows -->
+						<table class="table table-hover" id="productOrderingTable">
+							<thead>
+								<tr>
+									<th scope="col">No</th>
+									<th scope="col">거래처코드</th>
+									<th scope="col">거래처명</th>
+									<th scope="col">발주번호</th>
+									<th scope="col">발주일</th>
+									<th scope="col">상품코드</th>
+									<th scope="col">상품명</th>
+									<th scope="col">발주수량</th>
+									<th scope="col">입고단가</th>
+									<th scope="col">상품상태</th>
+									<th scope="col">입고일</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+						<!-- End Table with hoverable rows -->
+						<nav aria-label="Page navigation example">
+							<ul class="pagination" id="productOrderingPaging">
+								
+							</ul>
+						</nav>
+						<!-- End Pagination with icons -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+
+<div class="modal fade" id="productOrderingInfo" tabindex="-1">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">상품발주</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+			<form id="dataform">
+			
+				<table class="table table-hover" id="productOrderingDetailTable">
+					<thead>
+						<tr>
+							<th scope="row">거래처</th>
+							<td>
+							<select class="form-control" id="msupplierCd" name="supplierCd" onchange="supplierChoose(this)">
+							<option value=''>선택</option>
+							</select>
+							</td>	
+						</tr>
+						<tr>
+							<th scope="row">대표자명</th>
+							<td>
+							<input type="text" class="form-control" id="msupplierCeo" name="supplierCeo">
+							</td>
+							<th scope="row">전화번호</th>
+							<td>
+							<input type="text" class="form-control" id="mphone" name="phone">
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">담당자명</th>
+							<td>
+							<input type="text" class="form-control" id="mopName" name="opName">
+							</td>
+							<th scope="row">담당자 연락처</th>
+							<td>
+							<input type="text" class="form-control" id="mopPhone" name="opPhone">
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">담당자 이메일</th>
+							<td>
+							<input type="text" class="form-control" id="mopEmail" name="opEmail">
+							</td>
+							<th scope="row">거래처 상태</th>
+							<td>
+							<input type="text" class="form-control" id="msupplierStatus" name="supplierStatus">
+							</td>
+						</tr>
+						<tr>
+						<th scope="row">주문상품</th>
+						    <td colspan="2">
+						        <button type="button" class="btn btn-info float-end" onclick="add();">+</button>
+						    </td>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+
+				<table class="table table-hover" id="orderGoodsTable">
+					<thead>
+						<tr>
+							<th scope="col">상품코드</th>
+							<th scope="col">상품명</th>
+							<th scope="row">단가</th>
+							<th scope="col">수량</th>
+							<th scope="col">삭제</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="saveOrder()">발주</button>
+				<button type="button" class="btn btn-secondary"
+					data-bs-dismiss="modal">닫기</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End Vertically centered Modal-->
+
+<form id="hiddenform">
+	<input type="hidden" id="hsupplierCd" name="supplierCd">
+</form>
+
+
+<script src="/assets/js/paging.js"></script> 
+
+
+<script>
+	function orderSearch(pno) {
+		if(pno==undefined){
+			$('#currentPage').val(1);	
+		}else{
+			$('#currentPage').val(pno);
+		}
+		call_server(searchform, '/supplier/productOrderingList', getProductOrderingList);
+	}
+
+	
+	   // 상품 주문 정보 조회 콜백 함수
+	    function getProductOrderingList(vo) {
+	   	$('#productOrderingTable > tbody').empty();
+	    list = vo.supplierlist;
+	    
+	    var arrOrderNo = []; // 발주번호 별 rowspan을 저장할 배열
+	    var rowspan = 1; // 초기 rowspan 값
+	    var arrIndex = 0; // 배열 인덱스
+	
+	    for (var i = 0; i < list.length; i++) {
+	        if (list[i].orderNo === list[i + 1]?.orderNo) { // 다음 행의 발주번호와 현재 행의 발주번호를 비교
+	            rowspan++; // 발주번호가 같으면 rowspan 증가
+	        } else {
+	            arrOrderNo[arrIndex] = rowspan; // 현재 발주번호의 rowspan 값을 배열에 저장
+	            rowspan = 1; // rowspan 초기화
+	            arrIndex++; // 배열 인덱스 증가
+	        }
+	    }
+
+
+         arrIndex = 0;
+         rowspan = arrOrderNo[arrIndex];
+         var cnt = 1;
+         
+         for (var i = 0; i < list.length; i++) {
+         var str = "<tr onclick=\"productOrderingDetail('" + list[i].supplierCd+ "');\" style=\"cursor:pointer;\">";
+         if (cnt == 1) {
+             str += "<th scope=\"row\" rowspan=\"" + rowspan + "\">"+((Number(vo.currentPage)-1)*vo.countPerPage+(i+1))+"</th>";
+             str += "<td rowspan=\"" + rowspan + "\">" + list[i].supplierCd + "</td>";
+             str += "<td rowspan=\"" + rowspan + "\">" + list[i].supplierName + "</td>";
+             str += "<td rowspan=\"" + rowspan + "\">" + list[i].orderNo + "</td>";
+             str += "<td rowspan=\"" + rowspan + "\">" + list[i].incomeDt + "</td>";
+         } 
+         str += "<td>" + list[i].goodsCd + "</td>";
+         str += "<td>" + list[i].goodsName + "</td>";
+         str += "<td>" + list[i].buyQty + "</td>";    
+         str += "<td>" + list[i].unitPrice + "</td>";
+         str += "<td>" + list[i].orderStatus + "</td>";
+         str += "<td>" + list[i].regDt + "</td>";
+         str += "</tr>";
+         $('#productOrderingTable').append(str);
+         if (cnt == rowspan ) {
+        	 cnt = 1;
+        	 arrIndex++; 
+	         rowspan = arrOrderNo[arrIndex]; 
+         } else {
+        	 cnt++;
+         }
+     	}
+        setPaging(productOrderingPaging, vo.startPage, vo.endPage, 'orderSearch');
+    }
+
+
+	
+
+	    function add() {
+	        str = "<tr>";
+	        str += "<td><select class='form-control goodsCdSelect' id='sGoodsCd"+goodsIdx+"' name='suppliergoodslist["+goodsIdx+"].goodsCd' onchange='changeGoods(this, "+goodsIdx+")'>";
+	        
+	        for(var j=0; j < goodslist.length; j++){
+	            str +="<option value='" + goodslist[j].goodsCd + "'>" + goodslist[j].goodsCd + "</option>";
+	        }
+	        
+	        str +="</select></td>";
+	        str += "<td id='goodsNameTxt"+goodsIdx+"'></td>";
+	        str += "<td><input type='text' class='form-control unitPriceInput' name='suppliergoodslist["+goodsIdx+"].unitPrice' style='width:100px;'></td>";
+	        str += "<td><input type='text' class='form-control buyQtyInput' name='suppliergoodslist["+goodsIdx+"].buyQty' style='width:100px;'></td>";
+	        str += "<td><button class='btn btn-danger deleteBtn'>삭제</button></td>";
+	        str += "</tr>";   
+	        $('#orderGoodsTable').append(str);
+	        
+	        goodsIdx++;
+	        
+	        
+	        $(document).on('click', '.deleteBtn', function() {
+	            var row = $(this).closest('tr');
+	            
+	            row.remove();
+	        });
+	    }
+
+	
+	function productOrderingDetail(cd) {
+		$('#hsupplierCd').val(cd);
+		call_server(hiddenform, '/supplier/productOrderingDetail', function(vo) {
+	        displayProductOrderingDetail(vo);
+	        //add(vo);
+	    });	
+	}
+	
+	var goodsIdx=0;
+
+	function displayProductOrderingDetail(vo) {
+		
+		$('#productOrderingDetailTable > tbody').empty();
+		$('#orderGoodsTable > tbody').empty();
+		
+		$("#msupplierCd").prop('readonly', true).val(vo.supplierCd);
+		$("#msupplierName").prop('readonly', true).val(vo.supplierName);
+		$("#msupplierCeo").prop('readonly', true).val(vo.supplierCeo);
+		$("#mphone").prop('readonly', true).val(vo.phone);
+		$("#mopName").prop('readonly', true).val(vo.opName);
+		$("#mopPhone").prop('readonly', true).val(vo.opPhone);
+		$("#mopEmail").prop('readonly', true).val(vo.opEmail);
+		$("#msupplierStatus").prop('readonly', true).val(vo.supplierStatus);
+	
+		 goodslist = vo.goodslist;
+		
+		 list = vo.orderGoodslist;
+			
+		 
+		 for (var i = 0; i < list.length; i++) {
+			    str = "<tr>";
+			    str += "<td><select class='form-control goodsCdSelect' id='sGoodsCd"+goodsIdx+"' name='suppliergoodslist["+goodsIdx+"].goodsCd' onchange='changeGoods(this, "+goodsIdx+")'>";
+			    for(var j=0;j < goodslist.length; j++){
+			    	str +="<option value='" + goodslist[j].goodsCd + "'>" + goodslist[j].goodsCd + "</option>";
+			    }
+			    str +="</select></td>";
+			    str += "<td id='goodsNameTxt"+(goodsIdx)+"'>" + list[i].goodsName + "</td>";
+			    str += "<td><input type='text' class='form-control unitPriceInput' value='" + list[i].unitPrice + "' name='suppliergoodslist["+goodsIdx+"].unitPrice' style='width:100px;'></td>";
+			    str += "<td><input type='text' class='form-control buyQtyInput' value='" + list[i].buyQty + "' name='suppliergoodslist["+goodsIdx+"].buyQty' style='width:100px;'></td>";
+			    str += "<td><button class='btn btn-danger deleteBtn'>삭제</button></td>";
+			    str += "</tr>";   
+			    $('#orderGoodsTable').append(str);
+			    
+			    $('#sGoodsCd'+goodsIdx).val(list[i].goodsCd);
+			    
+			    goodsIdx++;
+			}
+
+		$('#productOrderingInfo').modal('show');
+		
+
+	}
+	
+	function changeGoods(obj, idx){
+		for(var i=0;i<goodslist.length;i++){
+			if(goodslist[i].goodsCd==$(obj).val()){
+				$('#goodsNameTxt'+idx).text(goodslist[i].goodsName);
+			}
+		}
+		
+		
+	}
+
+	function newOrder() {
+		$('#orderGoodsTable > tbody').empty();
+		
+			$('#msupplierCd').val('');
+		    $('#msupplierName').val('');
+		    $('#msupplierCeo').val('');
+		    $('#mphone').val('');
+		    $('#mopName').val('');
+		    $('#mopPhone').val('');
+		    $('#mopEmail').val('');
+		    $('#msupplierStatus').val('');
+		    
+
+	
+		$('#productOrderingInfo').modal('show');
+	}
+
+	function supplierChoose(cd) {
+		$('#hsupplierCd').val($(cd).val());
+		call_server(hiddenform, '/supplier/supplierChoose', handleSupplierChoose);
+	}
+	
+	function handleSupplierChoose(vo) {
+		
+		$("#msupplierName").prop('readonly', true).val(vo.supplierName);
+		$("#msupplierCeo").prop('readonly', true).val(vo.supplierCeo);
+		$("#mphone").prop('readonly', true).val(vo.phone);
+		$("#mopName").prop('readonly', true).val(vo.opName);
+		$("#mopPhone").prop('readonly', true).val(vo.opPhone);
+		$("#mopEmail").prop('readonly', true).val(vo.opEmail);
+		$("#msupplierStatus").prop('readonly', true).val(vo.supplierStatus);
+		
+		goodslist = vo.goodslist;
+		goodsIdx=0;
+		//$('#ctCd').val($(cd).val());
+			
+		//$('#msupplierCd').append(str);
+				
+		
+	}
+	
+	$(document).ready(function() {
+		call_server(dataform, '/supplier/supplierName', displySupplierName);
+	});
+
+	function displySupplierName(list) {
+		$('#supplierCd').empty();
+		$('#supplierCd').append("<option value=''>선택</option>");
+		for (var i = 0; i < list.length; i++) {
+			var str = "<option value='" + list[i].supplierCd + "'>" + list[i].supplierName + "</option>";
+			$('#supplierCd').append(str);
+			$('#msupplierCd').append(str);
+			
+		}
+
+	}
+	
+	function saveOrder(){
+		call_server(dataform, '/supplier/saveOrder', saveComplete);
+	}
+	
+	function saveComplete(cnt){
+		if (cnt > 0 ) {
+		    alert("신규상품 발주성공");
+		} else {
+		    alert("실패");
+		}
+		
+	}
+	
+</script>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.approve.dao.ApproveDao">
+<resultMap type="com.qms.table.vo.user.UserInfoVO" id="userMap">
+		<result property="userId" column="USER_ID" />
+		<result property="userName" column="USER_NAME" />
+		<result property="deptCd" column="DEPT_CD" />
+		<result property="positionCd" column="POSITION_CD" />
+		<result property="userPwd" column="USER_PWD" />
+		<result property="email" column="EMAIL" />
+		<result property="phone" column="PHONE" />
+		<result property="leaveDt" column="LEAVE_DT" />
+		<result property="leaveYn" column="LEAVE_YN" />
+	</resultMap>
+	<resultMap type ="com.qms.approve.vo.Aprv01VO" id = "infoMap">
+		<result property="docNo" column="doc_no" />
+		<result property="userId" column="user_id" />
+		<result property="docType" column="doc_type" />
+		<result property="preserveYear" column="preserve_year" />
+		<result property="docClass" column="doc_class" />
+		<result property="docStatus" column="doc_status" />
+		<result property="docTypeName" column="doc_type_name" />
+		<result property="preserveYearName" column="preserve_year_name" />
+		<result property="docClassName" column="doc_class_name" />
+		<result property="docStatusName" column="doc_status_name" />
+		<result property="title" column="title" />
+		<result property="content" column="content"/>
+		<result property="deptName" column="dept_name"/>
+		<result property="userName" column="user_name"/>
+		<result property="regDt" column="reg_dt"/>
+	</resultMap>
+	<resultMap type ="com.qms.approve.vo.Aprv02VO" id = "AprvMap">
+	<result property="docNo" column="doc_no"/>
+	<result property="aprvSeq" column="aprv_seq"/>
+	<result property="userId" column="user_id"/>
+	<result property="aprvType" column="aprv_type"/>
+	<result property="aprvStatus" column="aprv_status"/>
+	<result property="opinion" column="opinion"/>
+	<result property="userName" column="user_name"/>
+	<result property="aprvTypeName" column="aprv_type_name"/>
+	<result property="aprvStatusName" column="aprv_status_name"/>
+	</resultMap>
+	
+	<resultMap type ="com.qms.table.vo.approve.AprvFileVO" id = "FileMap">
+	<result property="fileName" column="file_name"/>
+	<result property="fileSize" column="file_size"/>
+	</resultMap>
+	
+<select id = "getDocStatus" resultMap = "infoMap">
+SELECT
+A.DOC_TYPE,
+( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP01' AND A.DOC_TYPE=COM_CD) DOC_TYPE_NAME,
+A.DOC_NO,
+A.TITLE,
+A.DOC_STATUS,
+C.DEPT_NAME,
+B.USER_NAME,
+A.REG_DT
+FROM TB_APRV_INFO A, TB_USER_INFO B, TB_DEPT_INFO C
+WHERE A.USER_ID = B.USER_ID
+AND B.DEPT_CD = C.DEPT_CD
+</select>
+
+<select id="selectTotalDocCount" resultType="integer">
+SELECT COUNT(*)
+FROM TB_APRV_INFO
+where 1=1
+</select>
+<select id ="selectDocDetail" resultMap = "infoMap">
+	SELECT
+		A.DOC_NO,
+		A.TITLE,
+		A.CONTENT,
+		B.USER_NAME,
+		A.DOC_TYPE,
+		( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP01' AND A.DOC_TYPE=COM_CD) DOC_TYPE_NAME,
+		A.DOC_CLASS,
+		( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP03' AND A.DOC_CLASS=COM_CD) DOC_CLASS_NAME,
+		A.REG_DT,
+		C.DEPT_NAME,
+		A.PRESERVE_YEAR,
+		( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP02' AND A.PRESERVE_YEAR=COM_CD) PRESERVE_YEAR_NAME,
+		A.DOC_STATUS,
+		( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP04' AND A.DOC_STATUS=COM_CD) DOC_STATUS_NAME
+	FROM TB_APRV_INFO A, TB_USER_INFO B, TB_DEPT_INFO C
+	WHERE DOC_NO = #{docNo}
+	AND A.USER_ID = B.USER_ID
+	AND B.DEPT_CD = C.DEPT_CD
+</select>
+<select id = "selectAprvLineList" resultMap = "AprvMap">
+SELECT
+ A.USER_ID,
+B.USER_NAME,
+B.POSITION_CD,
+( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP01' AND B.POSITION_CD=COM_CD) POSITION_CD_NAME,
+C.DEPT_NAME,
+A.APRV_TYPE,
+( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP04' AND A.APRV_TYPE=COM_CD) APRV_TYPE_NAME,
+A.APRV_STATUS,
+( SELECT COM_NAME FROM TB_COM_CODE WHERE COM_GRP_CD = 'AP04' AND A.APRV_STATUS=COM_CD) APRV_STATUS_NAME
+FROM TB_APRV_LINE A, TB_USER_INFO B, TB_DEPT_INFO C
+WHERE A.DOC_NO = #{docNo}
+AND A.USER_ID = B.USER_ID
+AND B.DEPT_CD = C.DEPT_CD
+</select>
+
+<select id = "selectAprvFileList" resultMap = "FileMap">
+SELECT
+FILE_NAME
+FROM TB_APRV_FILE
+WHERE DOC_NO = #{docNo}
+</select>
+</mapper>

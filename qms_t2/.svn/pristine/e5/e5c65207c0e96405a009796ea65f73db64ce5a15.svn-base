@@ -1,0 +1,172 @@
+package com.qms.pdf;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorker;
+import com.itextpdf.tool.xml.XMLWorkerFontProvider;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.css.CssFile;
+import com.itextpdf.tool.xml.css.StyleAttrCSSResolver;
+import com.itextpdf.tool.xml.html.CssAppliers;
+import com.itextpdf.tool.xml.html.CssAppliersImpl;
+import com.itextpdf.tool.xml.html.Tags;
+import com.itextpdf.tool.xml.parser.XMLParser;
+import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
+import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
+import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
+import com.qms.pdf.service.ItextPdfService;
+import com.qms.pdf.vo.ItextPdfDto;
+
+@Component
+public class ItextPdfUtil {
+    @Autowired
+    ItextPdfService service;
+
+    public ByteArrayOutputStream createPDF(ItextPdfDto itextPdfDto) {
+        Document document = new Document(PageSize.A4, 30, 30, 30, 30);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, baos);
+            pdfWriter.setInitialLeading(12.5f);
+            document.open();
+
+            CSSResolver cssResolver = new StyleAttrCSSResolver();
+            CssFile cssFile = null;
+
+            try {
+                InputStream cssStream = new FileInputStream("C:/workspace/java/qms_t2/src/main/webapp/assets/css/style.css");
+                cssFile = XMLWorkerHelper.getCSS(cssStream);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("PDF CSS 파일을 찾을 수 없습니다.");
+            }
+
+            if (cssFile == null) {
+                throw new IllegalArgumentException("PDF CSS 파일을 찾을 수 없습니다.");
+            }
+
+            cssResolver.addCss(cssFile);
+
+            // 폰트 설정 및 등록 부분
+            XMLWorkerFontProvider fontProvider = new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS);
+            try {
+                // 시스템 폰트 경로를 지정 (예: Windows의 Malgun Gothic)
+                fontProvider.register("C:/Windows/Fonts/malgun.ttf", "MalgunGothic");
+            } catch (Exception e) {
+                throw new IllegalArgumentException("PDF 폰트 파일을 찾을 수 없습니다.");
+            }
+
+            if (fontProvider.getRegisteredFonts() == null) {
+                throw new IllegalArgumentException("PDF 폰트 파일을 찾을 수 없습니다.");
+            }
+
+            // CssAppliers를 사용하여 폰트 적용
+            CssAppliers cssAppliers = new CssAppliersImpl(fontProvider);
+            HtmlPipelineContext htmlPipelineContext = new HtmlPipelineContext(cssAppliers);
+            htmlPipelineContext.setTagFactory(Tags.getHtmlTagProcessorFactory());
+
+            PdfWriterPipeline pdfWriterPipeline = new PdfWriterPipeline(document, pdfWriter);
+            HtmlPipeline htmlPipeline = new HtmlPipeline(htmlPipelineContext, pdfWriterPipeline);
+            CssResolverPipeline cssResolverPipeline = new CssResolverPipeline(cssResolver, htmlPipeline);
+
+            XMLWorker xmlWorker = new XMLWorker(cssResolverPipeline, true);
+            XMLParser xmlParser = new XMLParser(true, xmlWorker, StandardCharsets.UTF_8);
+
+            String htmlStr = getHtml(itextPdfDto.getPdfCode(), itextPdfDto);
+
+            StringReader stringReader = new StringReader(htmlStr);
+            xmlParser.parse(stringReader);
+
+            document.close();
+            pdfWriter.close();
+
+        } catch (DocumentException e1) {
+            throw new IllegalArgumentException("PDF 라이브러리 설정 에러");
+        } catch (IOException e2) {
+            e2.printStackTrace();
+            throw new IllegalArgumentException("PDF 파일 생성중 에러");
+        } catch (Exception e3) {
+            e3.printStackTrace();
+            throw new IllegalArgumentException("PDF 파일 생성중 에러");
+        } finally {
+            try {
+                document.close();
+            } catch (Exception e) {
+                System.out.println("PDF 파일 닫기 에러");
+                e.printStackTrace();
+            }
+        }
+
+        return baos;
+    }
+
+    public String getHtml(String code, @ModelAttribute("ItextPdfDto") ItextPdfDto vo) throws Exception {
+        vo = service.selectInvoiceData(vo);
+
+        String return_html = "";
+
+        switch (code) {
+            case "invoice.pdf":
+                return_html =
+                    "<html>" +
+                    "<head>" +
+                    "<style>" +
+                    "    body { font-family: 'MalgunGothic'; }" +
+                    "</style>" +
+                    "</head>" +
+                    "<body>" +
+                    "        <table class=\"invoice-table\">" +
+                    "            <tr class=\"invoice-header\">" +
+                    "                <th>Invoice Number</th>" +
+                    "                <td>" + vo.getInvoiceNo() + "</td>" +
+                    "            </tr>" +
+                    "            <tr>" +
+                    "                <th>Shipper</th>" +
+                    "                <td>" + vo.getShipper() + "</td>" +
+                    "            </tr>" +
+                    "            <tr>" +
+                    "                <th>Consignee</th>" +
+                    "                <td>" + vo.getConsignee() + "</td>" +
+                    "            </tr>" +
+                    "            <tr>" +
+                    "                <th>Notification Party</th>" +
+                    "                <td>" + vo.getNotiParty() + "</td>" +
+                    "            </tr>" +
+                    "            <tr>" +
+                    "                <th>Port of Loading</th>" +
+                    "                <td>" + vo.getPortLoad() + "</td>" +
+                    "            </tr>" +
+                    "            <tr>" +
+                    "                <th>Final Destination</th>" +
+                    "                <td>" + vo.getFinalDest() + "</td>" +
+                    "            </tr>" +
+                    "            <tr>" +
+                    "                <th>Remarks</th>" +
+                    "                <td>" + vo.getRemark() + "</td>" +
+                    "            </tr>" +
+                    "        </table>" +
+                    "</body>" +
+                    "</html>";
+                break;
+            default:
+                return_html = "";
+                break;
+        }
+        return return_html;
+    }
+}

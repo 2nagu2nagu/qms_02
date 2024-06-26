@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.approve.dao.NoticeDao">
+<resultMap type="com.qms.approve.vo.NoticeVO" id="NoticeMap">
+		<result property="noticeSeq" column="notice_seq" />
+		<result property="userId" column="user_id" />
+		<result property="noticeType" column="notice_type" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="filePath" column="file_path" />
+		<result property="fileName" column="file_name" />
+		<result property="delYn" column="del_yn" />
+		<result property="regDt" column="reg_dt" />
+		<result property="regUserId" column="reg_user_id" />
+		<result property="updDt" column="upd_dt" />
+		<result property="updUserId" column="up_user_id" />
+		
+		<result property="deptName" column="dept_name" />
+		<result property="userName" column="user_name" />
+</resultMap>
+
+<select id="selectNoticeList" resultMap="NoticeMap">
+		SELECT 
+			A.NOTICE_TYPE,
+			A.TITLE,
+			B.DEPT_NAME,
+			C.USER_NAME,
+			A.FILE_PATH,
+			TO_CHAR(A.REG_DT, 'YYYY-MM-DD')REG_DT
+		FROM 
+			TB_NOTICE_INFO A,
+			TB_DEPT_INFO B,
+			TB_USER_INFO C
+		WHERE
+			A.USER_ID = C.USER_ID
+		AND
+			C.DEPT_CD = B.DEPT_CD
+		<if test="title != null and title !=''">
+			AND TITLE like '%' || #{title} || '%'
+		</if>
+		<if test="noticeType != null and noticeType !=''">
+			AND NOTICE_TYPE = #{noticeType}
+		</if>
+		
+		
+</select>
+
+
+
+</mapper>

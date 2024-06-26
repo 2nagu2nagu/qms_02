@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.approve.dao.ApproveDao">
+<resultMap type="com.qms.table.vo.user.UserInfoVO" id="userMap">
+		<result property="userId" column="USER_ID" />
+		<result property="userName" column="USER_NAME" />
+		<result property="deptCd" column="DEPT_CD" />
+		<result property="positionCd" column="POSITION_CD" />
+		<result property="userPwd" column="USER_PWD" />
+		<result property="email" column="EMAIL" />
+		<result property="phone" column="PHONE" />
+		<result property="leaveDt" column="LEAVE_DT" />
+		<result property="leaveYn" column="LEAVE_YN" />
+	</resultMap>
+
+	
+	
+</mapper>

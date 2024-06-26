@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.item.dao.ItemDao">
+	
+	<resultMap type="com.qms.item.vo.ItemVO" id="itemMap">
+		<result property="itemCd" 					column="USER_ID"/>
+		<result property="itemName" 				column="USER_PWD"/>
+		<result property="itemType"					column="USER_NAME"/>
+		<result property="unitType" 				column="PHONE"/>
+		<result property="hscode" 					column="EMAIL"/>
+		<result property="boxType" 					column="DEPT_CD" />
+		<result property="boxQty" 					column="POSITION_CD" />
+		<result property="weight" 					column="LEAVE_YN" />
+		<result property="plantLine" 				column="LEAVE_DT" />		
+		<result property="unitPrice" 				column="DEPT_NAME" />	
+		<result property="location" 				column="COM_NAME" />	
+		<result property="subconYn" 				column="COM_GRP_CD" />	
+	</resultMap>
+	
+	<select id="selectTotalItemCount" resultType="integer">
+		
+  		
+	</select>
+	
+	<select id="selectItemList" resultMap="itemMap">
+			
+	
+	</select>
+	
+
+	
+	
+</mapper>

@@ -1,0 +1,28 @@
+package com.qms.order.dao;
+
+import java.util.List;
+
+import org.mybatis.spring.annotation.MapperScan;
+
+import com.qms.order.vo.OrderVO;
+
+@MapperScan(basePackages="com.qms.order.dao")
+public interface OrderDao {
+	public List<OrderVO> selectOrderList(OrderVO vo) throws Exception;
+	public int selectTotalOrderCount(OrderVO vo) throws Exception;
+	
+	//이 밑으로 모달
+	public List<OrderVO> selectModalDtlData(OrderVO vo) throws Exception;
+	public int updateStatus(OrderVO vo) throws Exception;
+	public int deleteOrderItemDate(OrderVO vo) throws Exception;
+	public int inserOrderItemDate(OrderVO vo) throws Exception;
+	
+	public String selectMaxOrderNo(OrderVO vo) throws Exception;
+	public int insertOrderItem(OrderVO vo) throws Exception;
+	public int insertOrderInfo(OrderVO vo) throws Exception;
+	
+	
+	
+
+}
+	

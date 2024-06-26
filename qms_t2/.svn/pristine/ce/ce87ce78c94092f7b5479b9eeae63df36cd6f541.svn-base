@@ -1,0 +1,17 @@
+package com.qms.product.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.product.dao.BomDao;
+
+@Service
+public class BomService {
+
+	@Autowired
+	BomDao dao;
+	
+	
+}	
+
+	

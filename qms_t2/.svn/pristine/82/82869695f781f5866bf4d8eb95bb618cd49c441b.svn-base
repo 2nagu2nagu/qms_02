@@ -1,0 +1,14 @@
+package com.qms.util;
+
+public class Constant {
+
+	public static String DOC_TYPE = "AP01";
+	
+	public static String PRESERVE_YEAR  = "AP02";
+	
+	public static String DOC_CLASS = "AP03";
+	
+	public static String DOC_STATUS = "AP04";
+	
+	public static String POSITION_CD = "US01";
+}

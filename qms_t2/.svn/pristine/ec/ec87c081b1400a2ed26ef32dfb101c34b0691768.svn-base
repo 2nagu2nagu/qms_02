@@ -1,0 +1,100 @@
+package com.qms.user.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.table.vo.user.UserInfoVO;
+import com.qms.user.dao.UserDao;
+import com.qms.user.vo.UserVO;
+
+@Service
+public class UserService {
+
+	@Autowired
+	UserDao dao;
+	
+	public int selectTotalUserCount(UserVO vo) throws Exception{
+		return dao.selectTotalUserCount(vo);
+	}
+	
+	public List<UserInfoVO> selectUserList(UserInfoVO vo) throws Exception{
+		return dao.selectUserList(vo);
+	}
+	
+	/*public List<UserVO> selectUserListTOexcel(UserVO vo) throws Exception{
+		return dao.selectUserListTOexcel(vo);
+	} //전체 유저리스트를 가져오기
+	
+	public static void createExcelFile(List<UserVO> userList, OutputStream out) throws Exception {
+	    Workbook workbook = new XSSFWorkbook();
+	    Sheet sheet = workbook.createSheet("유저 조회");
+
+	    // 헤더 셀 스타일 설정
+	    CellStyle headerCellStyle = workbook.createCellStyle();
+	    Font headerFont = workbook.createFont();
+	    headerFont.setBold(true); // 굵은 글꼴
+	    headerCellStyle.setFont(headerFont);
+	    headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	    headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    headerCellStyle.setBorderTop(BorderStyle.THIN); // 테두리 설정
+	    headerCellStyle.setBorderBottom(BorderStyle.THIN);
+	    headerCellStyle.setBorderLeft(BorderStyle.THIN);
+	    headerCellStyle.setBorderRight(BorderStyle.THIN);
+
+	    Row headerRow = sheet.createRow(0);
+	    
+	    // 헤더 셀 생성 및 스타일 적용
+	    Cell cell0 = headerRow.createCell(0);
+	    cell0.setCellValue("회원ID");
+	    cell0.setCellStyle(headerCellStyle);
+
+	    Cell cell1 = headerRow.createCell(1);
+	    cell1.setCellValue("성명");
+	    cell1.setCellStyle(headerCellStyle);
+
+	    Cell cell2 = headerRow.createCell(2);
+	    cell2.setCellValue("부서");
+	    cell2.setCellStyle(headerCellStyle);
+
+	    Cell cell3 = headerRow.createCell(3);
+	    cell3.setCellValue("직위");
+	    cell3.setCellStyle(headerCellStyle);
+
+	    Cell cell4 = headerRow.createCell(4);
+	    cell4.setCellValue("이메일");
+	    cell4.setCellStyle(headerCellStyle);
+
+	    Cell cell5 = headerRow.createCell(5);
+	    cell5.setCellValue("전화번호");
+	    cell5.setCellStyle(headerCellStyle);
+
+	    Cell cell6 = headerRow.createCell(6);
+	    cell6.setCellValue("퇴사여부");
+	    cell6.setCellStyle(headerCellStyle);
+	    
+	    Cell cell7 = headerRow.createCell(7);
+	    cell7.setCellValue("퇴사일");
+	    cell7.setCellStyle(headerCellStyle);
+
+	    // 데이터 채우기
+	    int rowNum = 1;
+	    for (UserVO user : userList) {
+	        Row row = sheet.createRow(rowNum++);
+	        row.createCell(0).setCellValue(user.getUserId());
+	        row.createCell(1).setCellValue(user.getUserName());
+	        row.createCell(2).setCellValue(user.getDeptName());
+	        row.createCell(3).setCellValue(user.getComName());
+	        row.createCell(4).setCellValue(user.getEmail());
+	        row.createCell(5).setCellValue(user.getPhone());
+	        row.createCell(6).setCellValue(user.getLeaveYn());
+	        row.createCell(7).setCellValue(user.getLeaveDt() != null ? user.getLeaveDt().toString() : "-");
+	    }
+
+	    workbook.write(out);
+	    workbook.close();
+	}*/
+
+
+}

@@ -1,0 +1,21 @@
+package com.qms.approve.vo;
+
+import java.util.List;
+
+import com.qms.table.vo.approve.AprvInfoVO;
+import com.qms.table.vo.common.ComCodeVO;
+
+import lombok.Data;
+
+@Data
+public class Aprv01VO extends AprvInfoVO{
+
+	private List<ComCodeVO> doclist;		//문서유형 리스트
+	private List<ComCodeVO> yearlist;		//보존년한 리스트
+	private List<ComCodeVO> classlist;	   //
+	private List<ComCodeVO> statuslist;
+	
+	private String userName;
+	private String deptName;
+	
+}

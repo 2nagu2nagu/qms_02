@@ -1,0 +1,43 @@
+package com.qms.approve.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.approve.dao.ApproveDao;
+import com.qms.approve.vo.Aprv01VO;
+import com.qms.approve.vo.Aprv02VO;
+import com.qms.table.vo.approve.AprvFileVO;
+import com.qms.table.vo.approve.AprvInfoVO;
+
+@Service
+public class ApproveService {
+
+	@Autowired
+	ApproveDao dao;
+	
+	public ArrayList<AprvInfoVO> getDocStatus(AprvInfoVO vo) throws Exception{
+		return dao.getDocStatus(vo);
+	}
+	public Aprv01VO selectDocDetail(Aprv01VO vo) throws Exception{
+		return dao.selectDocDetail(vo);
+	}
+	
+	public List<Aprv02VO> selectAprvLineList(Aprv01VO vo) throws Exception{
+		return dao.selectAprvLineList(vo);
+	}
+	
+	public List<AprvFileVO> selectAprvFileList(Aprv01VO vo) throws Exception{
+		return dao.selectAprvFileList(vo);
+	}
+	public ArrayList<AprvInfoVO> selectAprvIng(Aprv01VO vo) throws Exception{
+		return dao.selectAprvIng(vo);
+	}
+	public ArrayList<AprvInfoVO> selectAprvDone(Aprv01VO vo) throws Exception{
+		return dao.selectAprvDone(vo);
+	}
+	
+
+}

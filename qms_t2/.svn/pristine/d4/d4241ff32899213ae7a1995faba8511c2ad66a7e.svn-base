@@ -1,0 +1,82 @@
+package com.qms.approve.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qms.approve.service.NoticeService;
+import com.qms.approve.vo.NoticeVO;
+import com.qms.code.service.CodeService;
+import com.qms.table.vo.approve.NoticeInfoVO;
+import com.qms.table.vo.common.ComCodeVO;
+import com.qms.user.vo.UserVO;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class NoticeController {
+	@Autowired
+	NoticeService service;
+	
+	@Autowired
+	CodeService codeservice;
+	
+	
+	@RequestMapping("/board/list")
+	public String boards() throws Exception{
+		return "approve/bo01";
+	} //공지 page
+	
+	@RequestMapping("/board/createContent")
+	public String createContent() throws Exception{
+		return "approve/bo01pop1";
+	}//게시글 작성 팝업
+	
+	@RequestMapping("/board/searchlist")
+	@ResponseBody
+	public NoticeVO searchlist(@ModelAttribute("NoticeVO") NoticeVO vo ) throws Exception {
+		
+		int totalPage = service.selectTotalNoticeCount(vo); 
+		
+		List<NoticeInfoVO> list = service.selectNoticeList(vo);
+		
+		vo.setNoticelist(list);
+		vo.setTotal(totalPage); //총 데이터수.
+		vo.setStartPage(vo.getStartPage()); 
+		vo.setCurrentPage(vo.getCurrentPage());//현재페이지
+		
+		return vo;
+	} //공지 조회
+	
+	
+	// 공지사항 생성 만들어야됨
+
+	@RequestMapping("/board/settingNotice")
+	@ResponseBody
+	public List<ComCodeVO> noticeSetting() throws Exception {
+		
+		
+		//List<NoticeVO> list = service.selectNoticeSetting(vo);
+		ComCodeVO vo = new ComCodeVO();
+		vo.setComGrpCd("NT01");
+		List<ComCodeVO> list = codeservice.selectGetdata(vo);
+		
+		return  list;
+	}
+	
+	@RequestMapping("/board/updateNotice")
+	@ResponseBody
+	public int updateNotice( @ModelAttribute("NoticeVO") NoticeVO vo , HttpServletRequest request) throws Exception {
+		HttpSession session  = request.getSession();
+        UserVO uservo = (UserVO) session.getAttribute("QMSUser");
+		vo.setUserId(uservo.getUserId());
+		int c = service.insertNotice(vo);
+		return c;
+	
+	}
+}

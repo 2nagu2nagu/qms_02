@@ -1,0 +1,28 @@
+package com.qms.plan.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.plan.dao.PlanDao;
+import com.qms.plan.vo.planVO;
+
+@Service
+public class PlanService {
+
+	@Autowired
+	PlanDao dao;
+	public List<planVO> selectPlanList(planVO vo) throws Exception {
+		return dao.selectPlanList(vo);
+	}
+	public int insertPlan(planVO vo)throws Exception{
+		return dao.insertPlan(vo);
+	}
+	public int deletePlan(planVO vo)throws Exception{
+		return dao.deletePlan(vo);
+	}
+	
+}	
+
+	

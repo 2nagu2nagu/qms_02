@@ -1,0 +1,12 @@
+package com.qms.plan.dao;
+
+import java.util.List;
+
+import org.mybatis.spring.annotation.MapperScan;
+
+import com.qms.plan.vo.planVO;
+
+@MapperScan(basePackages="com.qms.plan.dao")
+public interface PlanDao {
+	public List<planVO> selectPlanList(planVO vo) throws Exception;
+}

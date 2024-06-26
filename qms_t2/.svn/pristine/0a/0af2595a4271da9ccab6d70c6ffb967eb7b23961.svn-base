@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.partner.dao.PartnerDao">
+	
+	<resultMap type="com.qms.partner.vo.PartnerVO" id="partnerMap">
+	
+		<result property="compCd" 					column="COMP_CD"/>
+		<result property="compName" 				column="COMP_NAME"/>
+		<result property="bizNo"					column="BIZ_NO"/>
+		<result property="tradeYn" 					column="TRADE_YN"/>
+		<result property="compCeo" 					column="COMP_CEO"/>
+		<result property="phone" 					column="PHONE" />
+		<result property="email" 					column="EMAIL" />
+		<result property="addr" 					column="ADDR" />
+		<result property="mgrName" 					column="MGR_NAME" />		
+		<result property="mgrPosition" 				column="MGR_POSITION" />	
+		<result property="mgrPhone" 				column="MGR_PHONE" />	
+		<result property="delYn" 					column="DEL_YN" />	
+		<result property="regDt"      				column="REG_DT" />
+	    <result property="regUserId"  				column="REG_USER_ID" />
+	    <result property="updDt"       				column="UPD_DT" />
+	    <result property="updUserId"   				column="UP_USER_ID" />
+	    
+	</resultMap>
+	
+	<select id="selectTotalPartnerCount" resultType="integer">
+	
+		SELECT COUNT(*)
+		FROM 
+			TB_PARTNER_INFO
+		WHERE 1=1
+		<if test="compCd!=null and compCd!=''">
+		AND COMP_CD LIKE '%'||#{compCd}||'%'
+		</if>
+		<if test="compName!=null and compName!=''">
+		AND COMP_NAME LIKE '%'||#{compName}||'%'
+		</if>
+		AND DEL_YN = 'N'
+  		
+	</select>
+	
+	<select id="selectPartnerList" resultMap="partnerMap">
+	
+		SELECT 
+			COMP_CD,
+			COMP_NAME,
+			COMP_CEO,
+			BIZ_NO,
+			PHONE
+		FROM (
+			SELECT 
+				ROWNUM RN,
+				COMP_CD,
+				COMP_NAME,
+				COMP_CEO,
+				BIZ_NO,
+				PHONE
+				FROM TB_PARTNER_INFO
+			WHERE 1=1
+			<if test="compCd!=null and compCd!=''">
+			AND COMP_CD LIKE '%'||#{compCd}||'%'
+			</if>
+			<if test="compName!=null and compName!=''">
+			AND COMP_NAME LIKE '%'||#{compName}||'%'
+			</if>
+			AND DEL_YN = 'N'
+			)
+		WHERE RN<![CDATA[ > ]]>(#{currentPage}-1)*#{countPerPage} 
+		AND RN<![CDATA[ <= ]]>#{currentPage}*#{countPerPage}
+	
+	</select>
+	
+
+	
+	
+</mapper>

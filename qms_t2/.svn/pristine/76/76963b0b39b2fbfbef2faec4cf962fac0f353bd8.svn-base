@@ -1,0 +1,339 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<title>제품조회</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+
+<!-- Favicons -->
+<link href="/assets/img/favicon.png" rel="icon">
+<link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+<link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/assets/css/style.css" rel="stylesheet">
+
+<%@ include file="../layout/menu.jsp"%>
+
+<main id="main" class="main">
+
+	<section class="section">
+		<div class="row">
+			<div class="col-lg-12">
+
+				<div class="card">
+					<div class="card-body" style="padding-top: 20px;">
+						<!-- General Form Elements -->
+						<form id="searchform">
+							<input type='hidden' id='currentPage' name='currentPage' value=1>
+							<table class="col-lg-12">
+								<tr>
+									<td style=  "text-align: right;">
+										<div class="row mb-3">
+											<label for="inputDate" class="col-sm-1 col-form-label">입고일</label>
+											<div class="col-sm-2">
+												<input type="date" class="form-control" id="inDtFrom" name="inDtFrom"
+												style = "wight : 150px">
+											</div>
+											~
+											<div class="col-sm-2">
+												<input type="date" class="form-control" id="inDtTo" name="inDtTo"
+												style = "wight : 150px">
+											</div>
+
+											<label for="inputText" class="col-sm-2 col-form-label">인보이스 번호</label>
+											<div class="col-sm-1">
+												<input type="text" class="form-control" id="invoiceNo" name="invoiceNo"
+												style = "wight : 150px">
+											</div>
+
+											<label for="inputText" class="col-sm-1 col-form-label" >거래처</label>
+											<div class="col-sm-2">
+												<input type="text" class="form-control" id="compName" name="compName" style = "wight:200px">
+												<div class="icon" >
+												<i class="ri-search-2-line" onclick="searchManage(0)"></i>
+												<div class="label"></div>
+											</div>
+										</div>
+
+
+									</td>
+									<td rowspan="1">
+										<button type="button" class="btn btn-info" onclick="rcvSearch();">조회</button>
+										<button type="button" class="btn btn-info" onclick="displayModal();">신규</button>
+									</td>
+								</tr>
+
+							</table>
+
+
+
+						</form>
+
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<!-- Table with hoverable rows -->
+						<table class="table table-hover" id="rcvTable">
+							<thead>
+								<tr>
+									<th scope="col">No</th>
+									<th scope="col">입고일</th>
+									<th scope="col">거래처명</th>
+									<th scope="col">INVOICE NO</th>
+									<th scope="col">총금액(원)</th>
+									<th scope="col">품목수</th>
+									<th scope="col">등록일</th>
+									<th scope="col">다운로드</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+						<!-- End Table with hoverable rows -->
+						<nav aria-label="Page navigation example">
+							<ul class="pagination" id="rcvPaging">
+
+							</ul>
+						</nav>
+						<!-- End Pagination with icons -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+<%@ include file="../layout/footer.jsp"%>
+
+<div class="modal fade" id="rcvModal" tabindex="-1">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">입고 등록/수정</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+			<form id="modalform">
+			<input type="hidden" id="iutype" name="iutype">
+				<table class="table table-hover" id="productOrderingDetailTable" >
+					<thead>
+						<tr>
+							<th scope="row">INVOICE NO</th>
+							<td>
+							<input type="text" class="form-control" id="minvoiceNo" name="invoiceNo">
+							</td>
+							<td colspan="9" style="text-align:right;"><button type="button" class="btn btn-primary" >조회</button>
+								<button type="button" class="btn btn-info" onclick="itemUpDate();">저장</button></td>
+							</tr>
+							<tr>
+							<th scope="row">거래처코드</th>
+							<td>
+							<input type="text" class="form-control" id="mcompCd" name="compCd">
+							</td><td>
+							<div class="icon" >
+							<i class="ri-search-2-line" onclick="searchManage(1)"></i>
+							<div class="label"></div></div></td>
+							<th scope="row">거래처명</th>
+							<td>
+							<input type="text" class="form-control" id="mcompName" name="compName">
+							</td>
+							<th scope="row">입고일</th>
+							<td>
+							<div class="col-sm-8">
+							<input type="date" class="form-control" id="minDt" name="inDt">
+							</div>
+							</td>
+						</tr>
+						<tr>
+						
+						
+						</tr>
+					</thead>
+					</table>
+					<table class="table table-hover" id="BomSelectT">
+					<tbody>
+					<tr>
+					<td colspan="9" style="text-align: right;">
+					<table style = "width: 100%;">
+						<tr><td style = "text-align: left";>품목정보</td><td style="text-align:right;"><button type="button" class="btn btn-primary" onclick="addButton()">+</button></td></tr>
+					</table>
+			    	 
+   					</td>
+   					</tr>
+					<tr>
+							<th scope="col">NO</th>
+							<th scope="col">품번</th>
+							<th scope="row">품명</th>
+							<th scope="col">박스규격</th>
+							<th scope="col">BOX수량</th>
+							<th scope="col">입고수량</th>
+							<th scope="col">단가</th>
+							<th scope="col">재고위치</th>
+							<th scope="col">삭제</th>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- End Vertically centered Modal-->
+
+<form id="hiddenform">
+	<input type="hidden" id="hitemCd" name="itemCd">
+</form>
+
+
+<script src="/assets/js/paging.js"></script>
+<script src="/assets/js/jquery-3.7.1.js"></script>
+<script src="/assets/js/common.js"></script>
+
+
+<script>
+function rcvSearch() {
+	call_server(searchform, '/receive/selectRcvList', selectRcvList);
+}
+
+function selectRcvList(vo) {
+	$('#rcvTable > tbody').empty();
+	list = vo.rcvlist;
+
+	for (var i = 0; i < list.length; i++) {
+		var str = "<tr onclick=\"ModalDtl('" + list[i].invoiceNo + "','" + list[i].compCd + "','" + list[i].compName + "','" + list[i].inDt + "');\" style=\"cursor:pointer;\">";
+		str +="<th scope=\"row\">"+ ((Number(vo.currentPage) - 1) * vo.countPerPage + (i + 1))+ "</th>";
+		str += "<td>" + list[i].inDt + "</td>";
+		str += "<td>" + list[i].compName + "</td>";
+		str += "<td>" + list[i].invoiceNo + "</td>";
+		str += "<td>" + list[i].totalPrice + "</td>";
+		str += "<td>" + list[i].itemCnt + "</td>";
+		str += "<td>" + list[i].regDt + "</td>";
+		str += "<td><button type='button' style='background: transparent; border: none; padding: 0;' onclick='getPdf();'><i class='bi bi-file-earmark-pdf-fill' style='font-size: 1.5em;'></i></button></td>";
+		str += "</tr>";
+		$('#rcvTable').append(str);
+	}
+	setPaging(rcvPaging, vo.startPage, vo.endPage, 'rcvSearch');
+}
+
+<!--이 밑으로 모달-->
+var row = 0;
+function searchManage(no){ // 거래처 셀렉
+	row = no;
+var  option= "width = 1000, height = 700, top = 100, left = 200"
+	window.open('/receive/rcv01pop1','popup',option);
+}
+
+function receivePartnerData(item) { // 선택한곳에 거래처 보여주기
+	if(row == "0"){
+	$('#compCd').val(item.compName);
+	}else{
+	$('#compNm').val(item.compName);
+	$('#comCd').val(item.compCd);
+	}
+}
+
+function displayModal(){ //신규
+	$('#rcvModal').modal('show');
+}
+
+function ModalDtl(no,cd,nm,dt){ // 본페이지에서 조회후 조회된값 클릭시 헤더부분에 띄워준후 콜서버
+	$('#minvoiceNo').val(no);
+	$('#mcompCd').val(cd);
+	$('#mcompName').val(nm);
+	$('#minDt').val(dt);
+	$('#rcvModal').modal('show');
+	//call_server(hiddenform,'/selectRcvClickList',RcvclickList);
+}
+
+function RcvclickList(list){ // 본페이지 조회후 조회된값 상세 모달
+	$('#listTable > tbody').empty();
+	for(var i = 0; i < list.length; i++){
+	    setRowData(list[i]);
+	}
+	$('#rcvModal').modal('show');
+}
+
+function receiveItemData(item) { // 모달안 품번 팝업 선택시
+	$('#addCd'+row).val(item.itemCd);
+	$('#addNm'+row).val(item.itemName);
+	$('#boxType'+row).val(item.boxType);
+	$('#boxQty'+row).val(item.boxQty);
+}
+
+function searchit(){ //모달안 조회버튼
+	call_server(modalform,'/selectRcvDtlList',selectrcvDtlList);
+}
+
+function selectrcvDtlList(vo){ //모달안조회 버튼 클릭시
+list = vo.blalist;
+if(list!=null){
+	for(var i = 0; i < list.length; i++){
+		setRowData(list[i]);
+    }
+}
+}
+
+function addButton(){ // 모달안 +버튼 클릭시
+	setRowData(null);
+}
+
+var rowidx = 0;
+function setRowData(vo){ // 모달 조회 공통쿼리
+	if(vo==null){
+		vo = new Object();
+		vo.sitemCd='';
+		vo.sitemName='';
+		vo.itemType='';
+		vo.insQty = '';
+		vo.unitType='';
+	}else{
+		console.log(vo);
+	}
+	str = "<tr>";
+	str += "<td>"+rowidx+"</td>";
+    str += "<td><input type=\"text\" id=\"addCd"+rowidx+"\" name=\"itemlist["+rowidx+"].sitemCd\" value='"+vo.sitemCd+"'class=\"form-control\">";
+    str += "<div class=\"icon\" >";
+    str += "</td></div>";
+    str += "<td><input type=\"text\" id=\"addNm"+rowidx+"\" value='"+vo.sitemName+"'class=\"form-control\"></td>";
+	str += "<td><input type=\"text\" id=\"addNm"+rowidx+"\" value='"+vo.sitemName+"'class=\"form-control\"></td>";
+    str += "<td><input type=\"text\" id=\"addNm"+rowidx+"\" value='"+vo.sitemName+"'class=\"form-control\"></td>";
+    str += "<td><input type=\"text\" id=\"addNm"+rowidx+"\" value='"+vo.sitemName+"'class=\"form-control\"></td>";
+    str += "<td><input type=\"text\" id=\"addNm"+rowidx+"\" value='"+vo.sitemName+"'class=\"form-control\"></td>";
+    str +=  "<td ><select id=\"bomLevel"+rowidx+"\" name=\"itemlist["+rowidx+"].bomLevel\"style=\"width:200px;\"class=\"form-control\"><option value=>== 선택 ==</option><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option></select></td>";
+    str +=  "<td class=\"form-control\"><input type='text' id=\"itType"+rowidx+"\" value='"+vo.itemType+"'></td>";
+    str += "<td><input type=\"text\" name=\"itemlist["+rowidx+"].insQty\" value='"+vo.insQty+"'class=\"form-control\"></td>";
+    str +=  "<td><input type=\"text\" id=\"unitType"+rowidx+"\" value='"+vo.unitType+"'></td>";
+    str +=  "<td><button type=\"button\" class=\"btn btn-primary\" onclick=\"delTr(this)\">삭제</button></td>"; 
+    str +=  "</tr>";
+    $('#BomSelectT').append(str);
+    $('#bomLevel'+rowidx).val(vo.bomLevel);
+    rowidx++;
+	}
+	
+function delTr(obj){ //모달안 삭제펑션
+	$(obj).closest('tr').remove();
+}
+
+
+</script>

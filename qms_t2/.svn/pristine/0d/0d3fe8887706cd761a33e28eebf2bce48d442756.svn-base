@@ -1,0 +1,30 @@
+package com.qms.item.vo;
+
+import java.util.List;
+
+import com.qms.table.vo.common.ComCodeVO;
+import com.qms.table.vo.item.ItemInfoVO;
+
+import lombok.Data;
+
+@Data
+public class ItemVO extends ItemInfoVO{
+
+	private List<ItemInfoVO> itemlist; //아이템리스트
+	
+	private List<ComCodeVO> itemtypelist; //아이템리스트
+	private List<ComCodeVO> unitlist; //제품타입리스트
+	private List<ComCodeVO> boxlist; //박스호수리스트
+	private List<ComCodeVO> plantlist; //생산라인리스트
+	private List<ComCodeVO> locationlist; //장소리스트
+	
+	private String comName; 	 
+	
+	private List<String> comGrpCdList;
+	
+
+	
+	
+	
+	
+}

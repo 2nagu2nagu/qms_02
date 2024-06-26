@@ -1,0 +1,189 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<title>기안서 작성</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+
+<!-- Favicons -->
+<link href="/assets/img/favicon.png" rel="icon">
+<link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+<link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+	<%@ include file="../layout/menu.jsp"%>
+
+	<main id="main" class="main">
+		<form enctype="multipart/form-data">
+			<div class="pagetitle">
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="index.html">홈</a></li>
+						<li class="breadcrumb-item">전자결재</li>
+						<li class="breadcrumb-item active">기안서작성</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="modal-body" style="display: flex; justify-content: space-between;">
+					<div style="width: 49%;">
+						<table class="table table-hover" style="table-layout: fixed; width: 100%;">
+							<tr>
+								<th scope="col" style="width: 25%;">문서번호</th>
+								<td style="width: 25%;"><input type='text' style="width: 100%;"></td>
+								<th scope="col" style="width: 25%;">등록일</th>
+								<td style="width: 25%;"><input type='text' style="width: 100%;"></td>
+							</tr>
+							<tr>
+								<th scope="col" style="width: 25%;">등록자</th>
+								<td style="width: 25%;"><input type='text' style="width: 100%;"></td>
+								<th scope="col" style="width: 25%;">부서</th>
+								<td style="width: 25%;"><input type='text' style="width: 100%;"></td>
+							</tr>
+							<tr>
+								<th scope="col" style="width: 25%;">문서유형</th>
+								<td style="width: 25%;"><select class="form-control" style="width: 100%;">
+										<option value="">선택</option>
+								</select></td>
+								<th scope="col" style="width: 25%;">보존년한</th>
+								<td style="width: 25%;"><select class="form-control" style="width: 100%;">
+										<option value="">선택</option>
+								</select></td>
+							</tr>
+							<tr>
+								<th scope="col" style="width: 25%;">문서종류</th>
+								<td style="width: 25%;"><select class="form-control" style="width: 100%;">
+										<option value="">선택</option>
+								</select></td>
+								<th scope="col" style="width: 25%;">문서상태</th>
+								<td style="width: 25%;"><select class="form-control" style="width: 100%;">
+										<option value="">선택</option>
+								</select></td>
+							</tr>
+						</table>
+						<div>
+							<h5 class="modal-title" style="display: flex; justify-content: space-between;">
+								결제라인
+								<button type="button" onclick="addLine();" class="btn btn-primary">
+									<div class="icon">
+										<i class="ri-menu-add-line"></i>
+									</div>
+								</button>
+							</h5>
+						</div>
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th scope="col">No</th>
+									<th scope="col">성명</th>
+									<th scope="col">직위</th>
+									<th scope="col">부서</th>
+									<th scope="col">결재유형</th>
+									<th scope="col">상태</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+
+						<div>
+							<h5 class="modal-title" style="display: flex; justify-content: space-between;">
+								첨부파일 <label for="fileInput" class="btn btn-primary">
+									<div class="icon">
+										<i class="ri-folder-3-fill"></i>
+									</div>
+								</label> <input id="fileInput" type="file" style="display: none;" onchange="handleFileUpload()">
+							</h5>
+
+						</div>
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th scope="col">No</th>
+									<th scope="col">파일명</th>
+									<th scope="col">파일크기</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+
+
+					<div style="width: 49%;">
+						<table class="table table-hover" style="table-layout: fixed; width: 100%;">
+							<tr>
+								<th scope="col" style="width: 25%;">문서번호</th>
+								<td style="width: 100%;"><input type='text' style="width: 100%;"></td>
+							</tr>
+
+							<tr>
+								<th scope="col" style="width: 25%;">설명</th>
+								<td colspan="3" style="width: 75%;"><textarea id="mcontent" class="form-control" rows="13" style="width: 100%;"></textarea></td>
+							</tr>
+						</table>
+						<div style="text-align: center;">
+							<button type="button" class="btn btn-primary">상신</button>
+							<button type="button" class="btn" style="background-color: purple; color: white;">임시저장</button>
+						</div>
+					</div>
+				</div>
+
+
+
+			</section>
+		</form>
+	</main>
+	<!-- End #main -->
+	<!-- Pop up -->
+
+
+
+
+	<!-- ======= Footer ======= -->
+	<%@ include file="../layout/footer.jsp"%>
+
+
+</body>
+<script src="/assets/js/jquery-3.7.1.js"></script>
+<script src="/assets/js/common.js"></script>
+<script>
+	function addLine() {
+		var url = "/approve/approveline";
+		var name = "결재라인 추가";
+		var option = "width = 900, height = 500, top = 100, left = 200"
+		window.open(url, name, option);
+	}
+
+	
+	function handleFileUpload() {
+		const file = $('#fileInput').prop('files')[0]; 
+	}
+</script>
+
+
+

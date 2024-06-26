@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.order.dao.OrderDao">
+
+	<resultMap type="com.qms.order.vo.OrderVO" id="OrderMap">
+        <result property="orderNo" column="ORDER_NO" />
+        <result property="compCd" column="COMP_CD" />
+        <result property="orderStatus" column="ORDER_STATUS" />
+        <result property="regDt" column="REG_DT" />
+        <result property="regUserId" column="REG_USER_ID" />
+        <result property="updDt" column="UPD_DT" />
+        <result property="updUserId" column="UPD_USER_ID" />
+        <result property="itemCd" column="ITEM_CD" />
+        <result property="orderQty" column="ORDER_QTY" />
+        <result property="orderPrice" column="ORDER_PRICE" />
+        <result property="deliveryDt" column="DELIVERY_DT" />
+        
+        <result property="deliveryDtFrom" column="DELIVERY_DT_FROM" />
+        <result property="deliveryDtTo" column="DELIVERY_DT_TO" />
+        
+        <result property="itemName" column="ITEM_NAME" />
+        <result property="compName" column="COMP_NAME" />
+        <result property="unitPrice" column="UNIT_PRICE" />
+    </resultMap>
+    
+	<select id="selectTotalOrderCount" resultType="integer">
+	    SELECT 
+	        COUNT(*)
+	    FROM
+	        TB_ORDER_INFO A,
+	        (
+	            SELECT  
+	                C.ORDER_NO,
+	                D.ITEM_NAME,
+	                D.UNIT_PRICE,
+	                C.ORDER_QTY,
+	                C.ORDER_PRICE,
+	                C.ITEM_CD 
+	            FROM 
+	                TB_ITEM_INFO D, 
+	                TB_ORDER_ITEM C 
+	            WHERE 
+	                D.ITEM_CD = C.ITEM_CD
+	        ) B
+	    WHERE
+	        A.ORDER_NO = B.ORDER_NO
+	        <if test="compName != null and compName != ''">
+	            AND (SELECT C.COMP_NAME FROM TB_PARTNER_INFO C WHERE C.COMP_CD = A.COMP_CD) LIKE '%' || #{compName} || '%'
+	        </if>
+	        <if test="itemCd != null and itemCd != ''">
+	            AND B.ITEM_CD LIKE '%' || #{itemCd} || '%'
+	        </if>
+	        <if test="deliveryDtFrom != null and deliveryDtFrom != ''">
+	            AND TO_CHAR(A.DELIVERY_DT, 'yyyy-mm-dd') <![CDATA[>=]]> #{deliveryDtFrom}
+	        </if>
+	        <if test="deliveryDtTo != null and deliveryDtTo != ''">
+	            AND TO_CHAR(A.DELIVERY_DT, 'yyyy-mm-dd') <![CDATA[<=]]> #{deliveryDtTo}
+	        </if>
+	</select>
+
+    
+    <select id ="selectOrderList" resultMap="OrderMap" >
+    	SELECT 
+			    	RN,
+					ORDER_NO,
+					COMP_CD,
+					COMP_NAME,
+					ITEM_CD,
+					ITEM_NAME,
+					UNIT_PRICE,
+					ORDER_QTY,
+					ORDER_PRICE,
+					ORDER_STATUS,
+					DELIVERY_DT,
+					REG_DT
+    	FROM
+    		(SELECT 
+			    	ROW_NUMBER() OVER(ORDER BY A.ORDER_NO DESC) RN,
+				    A.ORDER_NO,
+				    A.COMP_CD,
+				    (SELECT C.COMP_NAME FROM TB_PARTNER_INFO C WHERE C.COMP_CD = A.COMP_CD) COMP_NAME,
+				    B.ITEM_CD,
+				    B.ITEM_NAME,
+				    B.UNIT_PRICE,
+				    B.ORDER_QTY,
+				    B.ORDER_PRICE,
+				    A.ORDER_STATUS,
+				    TO_CHAR(A.DELIVERY_DT, 'YYYY-MM-DD') AS DELIVERY_DT,
+            		TO_CHAR(A.REG_DT, 'YYYY-MM-DD') AS REG_DT
+				FROM
+				    TB_ORDER_INFO A, 
+				    (
+				    SELECT  C.ORDER_NO,D.ITEM_NAME ,D.UNIT_PRICE, C.ORDER_QTY, C.ORDER_PRICE, C.ITEM_CD 
+				        FROM TB_ITEM_INFO D, TB_ORDER_ITEM C 
+				        WHERE D.ITEM_CD = C.ITEM_CD) B
+				WHERE
+				    A.ORDER_NO = B.ORDER_NO
+				<if test="compName != null and compName != ''">
+	            AND (SELECT C.COMP_NAME FROM TB_PARTNER_INFO C WHERE C.COMP_CD = A.COMP_CD) LIKE '%' || #{compName} || '%'
+	        	</if>
+				<if test="itemCd!=null and itemCd!=''">
+				AND ITEM_CD LIKE '%'||#{itemCd}||'%'
+				</if>
+				<if test="deliveryDtFrom != null and deliveryDtFrom != ''">
+	            AND TO_CHAR(A.DELIVERY_DT, 'yyyy-mm-dd') <![CDATA[>=]]> #{deliveryDtFrom}
+		        </if>
+		        <if test="deliveryDtTo != null and deliveryDtTo != ''">
+		          AND TO_CHAR(A.DELIVERY_DT, 'yyyy-mm-dd') <![CDATA[<=]]> #{deliveryDtTo}
+		        </if>
+					)
+					WHERE RN<![CDATA[ > ]]>(#{currentPage}-1)*#{countPerPage} 
+					AND RN<![CDATA[ <= ]]>#{currentPage}*#{countPerPage}	    
+    </select>
+		
+
+
+
+</mapper>

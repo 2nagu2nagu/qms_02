@@ -1,0 +1,44 @@
+package com.qms.item.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.item.dao.ItemDao;
+import com.qms.item.vo.ItemVO;
+import com.qms.table.vo.item.ItemInfoVO;
+
+@Service
+public class ItemService {
+
+	@Autowired
+	ItemDao dao;
+	
+	public int selectTotalItemCount(ItemVO vo) throws Exception{
+		return dao.selectTotalItemCount(vo);
+	}
+	
+	public List<ItemInfoVO> selectItemList(ItemInfoVO vo) throws Exception{
+		return dao.selectItemList(vo);
+	}
+	
+	//이 밑은 모달관련 함수
+		public int selectDuplicateItemCdCheck(ItemVO vo) throws Exception{
+			return dao.selectDuplicateItemCdCheck(vo);
+		}
+		
+		public int insertNewItem(ItemVO vo) throws Exception{
+			return dao.insertNewItem(vo);
+		}
+		
+		public int updateItemData(ItemVO vo) throws Exception{
+			return dao.updateItemData(vo);
+		}
+		
+		public ItemVO selectItemDtlData(ItemVO vo) throws Exception{
+			return dao.selectItemDtlData(vo);
+		}
+}	
+
+	

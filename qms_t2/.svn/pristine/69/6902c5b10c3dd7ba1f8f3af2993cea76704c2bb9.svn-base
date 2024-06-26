@@ -1,0 +1,14 @@
+package com.qms.pdf.dao;
+
+import org.mybatis.spring.annotation.MapperScan;
+
+import com.qms.pdf.vo.ItextPdfDto;
+
+
+@MapperScan(basePackages="com.qms.pdf.dao")
+public interface ItextPdfDao {	
+	public ItextPdfDto selectInvoiceData(ItextPdfDto vo) throws Exception;
+
+}
+
+	

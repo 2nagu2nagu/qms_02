@@ -1,0 +1,40 @@
+package com.qms.approve.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.qms.approve.service.ApproveService;
+import com.qms.table.vo.approve.ApproveInfoVO;
+
+
+@Controller
+public class ApproveController {
+
+	@Autowired
+	ApproveService service;
+	
+	
+	@RequestMapping("/approve/write")
+	public String approveWrite() throws Exception{
+		return "approve/ap01";
+	}
+	
+	@RequestMapping("/approve/approveline")
+	public String approveLine() throws Exception{
+		return "approve/ap01pop1";
+	}
+	@RequestMapping("/approve/list")
+	public String approveSearch() throws Exception{
+		return "approve/ap02";
+	}
+	@RequestMapping("/approve/aprv02pop")
+	public String approvepop() throws Exception{
+		return "approve/ap02pop";
+	}
+	
+
+	
+	
+	
+}

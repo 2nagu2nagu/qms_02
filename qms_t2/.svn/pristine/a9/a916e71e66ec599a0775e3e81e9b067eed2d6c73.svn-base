@@ -1,0 +1,28 @@
+package com.qms.partner.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.partner.dao.PartnerDao;
+import com.qms.partner.vo.PartnerVO;
+import com.qms.table.vo.system.PartnerInfoVO;
+
+@Service
+public class PartnerService {
+
+	@Autowired
+	PartnerDao dao;
+	
+	public int selectTotalPartnerCount(PartnerVO vo) throws Exception{
+		return dao.selectTotalPartnerCount(vo);
+	}
+	
+	public List<PartnerInfoVO> selectPartnerList(PartnerInfoVO vo) throws Exception{
+		return dao.selectPartnerList(vo);
+	}
+		
+
+		
+}

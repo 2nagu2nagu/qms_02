@@ -1,0 +1,220 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+
+
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<title>제품조회</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+
+<!-- Favicons -->
+<link href="/assets/img/favicon.png" rel="icon">
+<link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+<link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/assets/css/style.css" rel="stylesheet">
+
+<%@ include file="../layout/menu.jsp"%>
+
+<main id="main" class="main">
+
+	<section class="section">
+		<div class="row">
+			<div class="col-lg-12">
+
+				<div class="card">
+					<div class="card-body" style="padding-top: 20px;">
+						<!-- General Form Elements -->
+						<form id="searchform">
+							<input type='hidden' id='currentPage' name='currentPage' value=1>
+							<table class="col-lg-12">
+								<tr>
+									<td style=  "text-align: right;">
+										<div class="row mb-3">
+											<label for="inputDate" class="col-sm-1 col-form-label">입고일</label>
+											<div class="col-sm-2">
+												<input type="date" class="form-control" id="joinDtFrom" name="inboundDtFrom">
+											</div>
+											~
+											<div class="col-sm-2">
+												<input type="date" class="form-control" id="joinDtTo" name="inboundDtTo">
+											</div>
+
+											<label for="inputText" class="col-sm-2 col-form-label">인보이스 번호</label>
+											<div class="col-sm-1">
+												<input type="text" class="form-control" id="itemCd" name="itemCd">
+											</div>
+
+											<label for="inputText" class="col-sm-1 col-form-label">거래처</label>
+											<div class="col-sm-1">
+												<input type="text" class="form-control" id="itemName" name="itemName">
+												<button type = "button" class="search"></button>
+											</div>
+
+										</div>
+
+
+									</td>
+									<td rowspan="1">
+										<button type="button" class="btn btn-info" onclick="itemSearch();">조회</button>
+										<button type="button" class="btn btn-info" onclick="displayModal(0);">신규</button>
+									</td>
+								</tr>
+
+							</table>
+
+
+
+						</form>
+
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<!-- Table with hoverable rows -->
+						<table class="table table-hover" id="listTable">
+							<thead>
+								<tr>
+									<th scope="col">No</th>
+									<th scope="col">입고일</th>
+									<th scope="col">거래처명</th>
+									<th scope="col">INVOICE NO</th>
+									<th scope="col">총금액(원)</th>
+									<th scope="col">품목수</th>
+									<th scope="col">등록일</th>
+									<th scope="col">다운로드</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+						<!-- End Table with hoverable rows -->
+						<nav aria-label="Page navigation example">
+							<ul class="pagination" id="itemPaging">
+
+							</ul>
+						</nav>
+						<!-- End Pagination with icons -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+<%@ include file="../layout/footer.jsp"%>
+
+<div class="modal fade" id="dtlInfo" tabindex="-1">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">
+					<strong>제품등록/수정</strong>
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="dataform">
+
+					<table class="table table-hover" id="itemDetailTable">
+						<thead>
+							<tr>
+								<th scope="row">품번</th>
+								<td><input type="text" class="form-control" id="mitemCd" name="itemCd" maxlength="20"></td>
+								<th scope="row">품명</th>
+								<td><input type="text" class="form-control" id="mitemName" name="itemName"></td>
+							</tr>
+							<tr>
+								<th scope="row">제품유형</th>
+								<td><select class="form-control" id="mitemType" name="itemType">
+										<option value=''>선택</option>
+								</select></td>
+								<th scope="row">제품단위</th>
+								<td><select class="form-control" id="munitType" name="unitType">
+										<option value=''>선택</option>
+								</select></td>
+							</tr>
+							<tr>
+								<th scope="row">HSCODE</th>
+								<td><input type="text" class="form-control" id="mhscode" name="hscode"></td>
+								<th scope="row">BOX 규격</th>
+								<td><select class="form-control" id="mboxType" name="boxType">
+										<option value=''>선택</option>
+								</select></td>
+							</tr>
+							<tr>
+								<th scope="row">무게(g)</th>
+								<td><input type="text" class="form-control" id="mweight" name="weight"></td>
+								<th scope="row">BOX 수량</th>
+								<td><input type="text" class="form-control" id="mboxQty" name="boxQty"></td>
+							</tr>
+							<tr>
+								<th scope="row">생산라인</th>
+								<td><select class="form-control" id="mplantLine" name="plantLine">
+										<option value=''>선택</option>
+								</select></td>
+								<th scope="row">단가</th>
+								<td><input type="text" class="form-control" id="munitPrice" name="unitPrice"></td>
+							</tr>
+							</tr>
+							<tr>
+								<th scope="row">재고위치</th>
+								<td><select class="form-control" id="mlocation" name="location">
+										<option value=''>선택</option>
+								</select></td>
+								<th scope="row">하도급여부</th>
+								<td>
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input" id="msubconYn"> <label class="form-check-label" for="subconYn"></label> <input type="hidden" id="hsubconYn" name="subconYn" value="N">
+									</div>
+								</td>
+						</thead>
+						<tbody>
+							<!-- DB 데이터 뿌려주는 부분 -->
+						</tbody>
+					</table>
+
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="newSaveBtn" onclick="saveItem(1)">저장</button>
+				<button type="button" class="btn btn-primary" id="UpdSaveBtn" onclick="saveItem(0)">저장</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- End Vertically centered Modal-->
+
+<form id="hiddenform">
+	<input type="hidden" id="hitemCd" name="itemCd">
+</form>
+
+
+<script src="/assets/js/paging.js"></script>
+<script src="/assets/js/jquery-3.7.1.js"></script>
+<script src="/assets/js/common.js"></script>
+
+
+<script>
+
+
+</script>

@@ -1,0 +1,27 @@
+package com.qms.product.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qms.product.dao.ProductDao;
+import com.qms.product.vo.proVO;
+
+@Service
+public class ProductService {
+
+	@Autowired
+	ProductDao dao;
+	
+	public List<proVO> selectMonthProList(proVO vo) throws Exception{
+		return dao.selectMonthProList(vo);
+	}
+	public int selectTotalMonthProCount(proVO vo) throws Exception{
+		return dao.selectTotalMonthProCount(vo);
+	}
+	
+	
+}	
+
+	

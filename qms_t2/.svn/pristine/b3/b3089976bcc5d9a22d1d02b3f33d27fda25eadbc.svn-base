@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qms.plan.dao.PlanDao">
+
+		<resultMap type="com.qms.plan.vo.planVO" id="PlanMap">
+			<result property="itemCd" column="item_cd" />
+			<result property="itemName" column="item_name" />
+			<result property="compCd" column="comp_cd" />
+			<result property="compName" column="comp_name" />
+			<result property="planDt" column="plan_dt" />
+			<result property="planQty" column="plan_qty" />
+			<result property="orderQty" column="order_qty" />
+			<result property="regDt" column="reg_dt" />
+			<result property="regUserId" column="reg_user_id" />
+			<result property="updDt" column="upd_dt" />
+			<result property="updUserId" column="upd_user_id" />
+		</resultMap>
+
+	<select id = "selectPlanList" resultMap = "PlanMap">
+		SELECT 
+		A.COMP_CD,
+		A.ITEM_CD,
+		B.COMP_NAME,
+		C.ITEM_NAME,
+		D.ORDER_QTY,
+		D.PLAN_QTY,
+		(TO_CHAR(D.PLAN_DT,'DD'))PLAN_DT
+		FROM TB_PARTNER_ITEM A, TB_PARTNER_INFO B, TB_ITEM_INFO C, TB_PLAN_INFO D
+		WHERE A.COMP_CD = #{compCd}
+		AND B.COMP_CD = A.COMP_CD
+		AND A.ITEM_CD = D.ITEM_CD(+)
+		AND A.COMP_CD = D.COMP_CD(+)
+		AND C.ITEM_CD = A.ITEM_CD
+	
+	</select>
+
+
+		</mapper>

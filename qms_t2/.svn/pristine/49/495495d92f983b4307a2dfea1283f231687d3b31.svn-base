@@ -1,0 +1,45 @@
+package com.qms.plan.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qms.plan.service.PlanService;
+import com.qms.plan.vo.planVO;
+import com.qms.util.Constant;
+
+@Controller
+public class PlanController {
+	@Autowired
+	PlanService service;
+	
+	
+	@RequestMapping("/plan/list")
+	public String plan(Model model) throws Exception{
+		model.addAttribute("baseYear", Constant.BASE_YEAR);
+		return "plan/list";
+	}
+	
+	@RequestMapping("/selectPlanList")
+	@ResponseBody
+	public List<planVO> planList(@ModelAttribute("planVO") planVO vo) throws Exception {
+		List<planVO> list = service.selectPlanList(vo);
+		vo.setPlanDt(vo.getPlanYear()+vo.getPlanMonth());
+		return list;
+	}
+
+	
+
+
+
+
+
+
+
+}
+

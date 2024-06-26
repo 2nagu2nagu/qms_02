@@ -1,0 +1,11 @@
+package com.qms.product.dao;
+
+import org.mybatis.spring.annotation.MapperScan;
+
+@MapperScan(basePackages="com.qms.product.dao")
+public interface BomDao {
+	
+
+	
+	
+}
