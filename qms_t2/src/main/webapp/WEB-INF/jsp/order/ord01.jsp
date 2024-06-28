@@ -189,15 +189,18 @@
 </div>
 
 <form id="hiddenform">
-	<input type="hidden" id="hcompCd" name="compCd"> <input type="hidden" id="horderNo" name="orderNo"> <input type="hidden" id="saveCd">
+	<input type="hidden" id="hcompCd" name="compCd"> 
+	<input type="hidden" id="horderNo" name="orderNo"> 
+	<input type="hidden" id="saveCd">
 </form>
-
 
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/jquery-3.7.1.js"></script>
 <script src="/assets/js/paging.js"></script>
 <script>
 var checkCd = [];
+var rowidx = 1;
+var activeRow = 0;
 
 	function orderSearch(pno) {
 		if (pno == undefined) {
@@ -358,7 +361,7 @@ var checkCd = [];
 		} ]);
 	}
 
-	var rowidx = 1;
+	
 	function setRowData(list) { // 모달 조회
 		if (!list) {
 			list = [ {
@@ -370,6 +373,7 @@ var checkCd = [];
 				orderPrice : '',
 				orderQty : ''
 			} ];
+			rowidx = 1;
 		}
 		for (var i = 0; i < list.length; i++) {
 			var str = '<tr>';
@@ -412,6 +416,7 @@ var checkCd = [];
 		$(obj).closest('tr').remove();
 		reindexRows(); // No 열을 다시 정렬하는 함수 호출
 		getTotalPrice();
+		rowidx--;
 	}
 
 	function reindexRows() {
@@ -424,26 +429,34 @@ var checkCd = [];
 
 	//데이터 저장
 	function saveData() {
-		if (checkFormFields() == true) {
-			var saveCd = $('#saveCd').val();
-			if (saveCd == 'update') {
-				call_server(modalform, '/order/updateOrderDtl', result);
-			} else {
-				call_server(modalform, '/order/insertNewOrderDate', result);
-			}
-		}
+	    if (checkFormFields()) {
+	        var saveCd = $('#saveCd').val();
+	        if (saveCd == 'update') {
+	            call_server(modalform, '/order/updateOrderDtl', result);
+	        } else {
+	            call_server(modalform, '/order/insertNewOrderDate', result);
+	        }
+	    }
 	}
-
+	
 	function checkFormFields() {
-		$('#modalform input:not([type="hidden"])').each(function() {
-			if ($(this).val() === '') {
-				alert('모든 필드를 채워주세요.');
-				return false; // loop 중지
-			}else{
-				return true;
-			}
-		});
+	    var isValid = true; // 초기값을 true로 설정
+	    
+	    if ($('#orderItemTable tbody tr').length == 0) {
+	    	alert('품목을 추가해 주십시오.');
+	        return false;
+	    }
+	    
+	    $('#modalform input:not([type="hidden"])').each(function() {
+	        if ($(this).val() === '') {
+	            alert('모든 필드를 채워주세요.');
+	            isValid = false; // 필드가 비어있으면 isValid를 false로 설정
+	            return false; // each 루프 중지
+	        }
+	    });
+    	return isValid; // 최종 유효성 검사 결과 반환
 	}
+	
 	function result(cnt) {
 		if (cnt > 0) {
 			alert("저장완료");
@@ -478,14 +491,12 @@ var checkCd = [];
 		$('#orderModal').modal('hide');
 		rowidx = 1;
 	}
-
-	var activeRow = 0;
+	
 	function additem(no) { //품번 팝업클릭시
 		activeRow = no;
 		var option = "width = 1000, height = 700, top = 100, left = 200"
 		window.open('/item/bom01pop1', 'popup', option);
 	}
-
 	
 	function receiveItemData(item) { // 품번팝업에서 가져오는값
 		for (var i = 0; i < checkCd.length; i++) {

@@ -18,7 +18,6 @@ public class Aprv01VO extends AprvInfoVO{
 	private List<ComCodeVO> yearlist;		//보존년한 리스트
 	private List<ComCodeVO> classlist;	   //
 	private List<ComCodeVO> statuslist;
-	
 	private String userName;
 	private String deptName;
 	private String aprvUserId;
@@ -42,7 +41,7 @@ public class Aprv01VO extends AprvInfoVO{
 	@JsonIgnore
 	private List<MultipartFile> upfilelist;
 	private List<AprvFileVO> filelist;
-	private List<Aprv01VO> AprvList; //페이징
+	private List<Aprv01VO> aprvList; //페이징
 	
 	private String lineId; // 결재자 이름
 	
@@ -52,4 +51,6 @@ public class Aprv01VO extends AprvInfoVO{
 	private String aprvSeq;
 	private String comName;
 	
+	private String deptCd;
+	private String userId;
 }

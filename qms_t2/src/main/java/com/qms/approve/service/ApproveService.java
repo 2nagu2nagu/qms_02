@@ -123,7 +123,12 @@ public class ApproveService {
 			return dao.selectTotalMyAprvCount(vo);
 		}
 		
+		public List<Aprv01VO> selectGetDocList(Aprv01VO vo) throws Exception{
+			return dao.selectGetDocList(vo);
+		}
 		
-
+		public int selectTotalDocListCount(Aprv01VO vo)throws Exception{
+			return dao.selectTotalDocListCount(vo);
+		}
 		
 }

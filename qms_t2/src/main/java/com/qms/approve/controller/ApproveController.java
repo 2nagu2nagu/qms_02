@@ -1,6 +1,7 @@
 package com.qms.approve.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import com.qms.approve.vo.AprvPageVO;
 import com.qms.code.service.CodeService;
 import com.qms.common.service.FileService;
 import com.qms.table.vo.approve.AprvInfoVO;
+import com.qms.table.vo.approve.NoticeInfoVO;
 import com.qms.table.vo.common.ComCodeVO;
 import com.qms.table.vo.user.UserInfoVO;
 import com.qms.user.vo.UserVO;
@@ -33,13 +35,52 @@ public class ApproveController {
 	CodeService codeService;
 	@Autowired
 	FileService fileService;
-
-	
 	
 	@RequestMapping("/approve/write")
 	public String approveWrite() throws Exception{
 		return "approve/ap01";
 	}
+	
+	@RequestMapping("/approve/list2")
+	public String approveList2(@ModelAttribute AprvInfoVO vo, Model model) throws Exception{
+		model.addAttribute("vo", vo);
+		return "approve/ap03";
+	}
+	
+	@RequestMapping("/approve/getDocList")
+	@ResponseBody
+	public Aprv01VO getDocList(@ModelAttribute("Aprv01VO") Aprv01VO vo, HttpServletRequest request) throws Exception{
+		HttpSession session  = request.getSession();
+		UserVO uservo = (UserVO) session.getAttribute("QMSUser");
+		vo.setUserId(uservo.getUserId());
+		
+        vo.setDocStatusName(Constant.DOC_STATUS);
+        vo.setDocTypeName(Constant.DOC_TYPE);
+		
+		int totalPage = service.selectTotalDocListCount(vo); 
+		
+		List<Aprv01VO> list = service.selectGetDocList(vo);
+		
+		vo.setAprvList(list);
+		vo.setTotal(totalPage); //총 데이터수.
+		vo.setStartPage(vo.getStartPage()); 
+		vo.setCurrentPage(vo.getCurrentPage());//현재페이지
+		
+		return vo;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@RequestMapping("/approve/approveline")
 	public String approveLine() throws Exception{

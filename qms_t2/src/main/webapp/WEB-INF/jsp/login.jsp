@@ -218,7 +218,7 @@
 			 } else {
 	           $.removeCookie("yourUserID");
 			 }
-			location.href="/approve/list";
+			location.href="/approve/list2";
 		}else{
 			alert(vo.msg);
 			

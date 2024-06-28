@@ -36,6 +36,9 @@ public interface ApproveDao {
 	public int selectTotalAprvingCount(Aprv01VO vo)throws Exception;
 	public int selectTotalAprvedCount(Aprv01VO vo)throws Exception;
 	public int selectTotalMyAprvCount(Aprv01VO vo)throws Exception;
+	
+	public List<Aprv01VO> selectGetDocList(Aprv01VO vo) throws Exception;
+	public int selectTotalDocListCount(Aprv01VO vo)throws Exception;
 }
 
 	

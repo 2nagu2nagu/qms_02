@@ -2,19 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qms.approve.dao.ApproveDao">
 	
-	<resultMap type="com.qms.table.vo.user.UserInfoVO"
-		id="userMap">
-		<result property="userId" column="USER_ID" />
-		<result property="userName" column="USER_NAME" />
-		<result property="deptCd" column="DEPT_CD" />
-		<result property="positionCd" column="POSITION_CD" />
-		<result property="userPwd" column="USER_PWD" />
-		<result property="email" column="EMAIL" />
-		<result property="phone" column="PHONE" />
-		<result property="leaveDt" column="LEAVE_DT" />
-		<result property="leaveYn" column="LEAVE_YN" />
-	</resultMap>
-
 	<resultMap type="com.qms.table.vo.approve.AprvInfoVO"
 		id="aprvMap">
 		<result property="docNo" column="DOC_NO" />
@@ -40,6 +27,7 @@
 		<result property="title" column="title" />
 		<result property="content" column="content" />
 		<result property="deptName" column="dept_name" />
+		<result property="deptCd" column="dept_cd" />
 		<result property="userName" column="user_name" />
 		<result property="regDt" column="reg_dt" />
 		<result property="lineId" column="line_id" />
@@ -79,6 +67,98 @@
 		<result property="aprvStatus" column="APRV_STATUS" />
 		<result property="opinion" column="OPINION" />
 	</resultMap>
+	
+	<select id="selectTotalDocListCount" resultType="integer">
+		SELECT 
+		    COUNT(*)
+		FROM
+		    (
+		    SELECT A.DEPT_CD, B.DEPT_NAME, A.USER_ID, A.USER_NAME
+		        FROM TB_USER_INFO A, TB_DEPT_INFO B
+		        WHERE A.DEPT_CD = B.DEPT_CD
+		        AND A.USER_ID = #{userId}
+		        )C,
+		    (
+		    SELECT USER_ID,DOC_TYPE, TITLE, REG_DT
+		        FROM TB_APRV_INFO
+		        WHERE USER_ID = #{userId}
+		        <if test="docStatus != '00'">
+		        AND DOC_STATUS = #{docStatus}
+		    	</if>
+		        )D
+		WHERE
+		    C.USER_ID = D.USER_ID
+	</select>
+	
+	<select id="selectGetDocList" resultMap="infoMap">
+    SELECT
+        RN,
+        DOC_NO,
+        DEPT_CD, 
+        DEPT_NAME, 
+        USER_ID, 
+        USER_NAME,
+        DOC_TYPE, 
+        TITLE, 
+        DOC_STATUS_NAME,
+        DOC_TYPE_NAME,
+        REG_DT
+    FROM (
+        SELECT 
+            ROW_NUMBER() OVER(ORDER BY D.REG_DT DESC) AS RN,
+            D.DOC_NO,
+            C.DEPT_CD, 
+            C.DEPT_NAME, 
+            C.USER_ID, 
+            C.USER_NAME,
+            D.DOC_TYPE, 
+            D.TITLE, 
+            D.DOC_STATUS_NAME,
+            D.DOC_TYPE_NAME,
+            TO_CHAR(D.REG_DT, 'YYYY.MM.DD') AS REG_DT
+        FROM (
+            SELECT 
+                A.DEPT_CD, 
+                B.DEPT_NAME, 
+                A.USER_ID, 
+                A.USER_NAME
+            FROM 
+                TB_USER_INFO A
+            JOIN 
+                TB_DEPT_INFO B ON A.DEPT_CD = B.DEPT_CD
+            WHERE 
+                A.USER_ID = #{userId}
+        ) C,
+        (
+            SELECT 
+                X.DOC_NO,
+                X.USER_ID, 
+                X.DOC_TYPE, 
+                Z.COM_NAME AS DOC_TYPE_NAME,
+                X.TITLE,
+                X.REG_DT,
+                X.DOC_STATUS,
+                Y.COM_NAME AS DOC_STATUS_NAME
+            FROM 
+                TB_APRV_INFO X
+            JOIN 
+                TB_COM_CODE Y ON Y.COM_CD = X.DOC_STATUS AND Y.COM_GRP_CD = #{docStatusName}
+            JOIN 
+                TB_COM_CODE Z ON Z.COM_CD = X.DOC_TYPE AND Z.COM_GRP_CD = #{docTypeName}
+            WHERE 
+                X.USER_ID = #{userId}
+            <if test="docStatus != '00'">
+	        AND X.DOC_STATUS = #{docStatus}
+	    	</if>
+                
+        ) D
+        WHERE
+            C.USER_ID = D.USER_ID
+    ) 
+    WHERE RN<![CDATA[ > ]]>(#{currentPage}-1)*#{countPerPage} 
+	AND RN<![CDATA[ <= ]]>#{currentPage}*#{countPerPage}
+</select>
+
 	
 	<select id="selectMaxDocNo" resultType="String">
 		SELECT

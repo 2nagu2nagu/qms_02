@@ -108,7 +108,7 @@ if (user != null) {
 		<li class="nav-item"><a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" > <i class="bi bi-menu-button-wide"></i><span>전자결재</span><i class="bi bi-chevron-down ms-auto"></i>
 		</a>
 			<ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-				<li><a href="/approve/list"> <i class="bi bi-circle"></i><span>기안서 조회</span>
+				<li><a href="/approve/list2"> <i class="bi bi-circle"></i><span>기안서 조회</span>
 				</a></li>
 				<li><a href="/approve/write"> <i class="bi bi-circle"></i><span>기안서 작성</span>
 				</a></li>
